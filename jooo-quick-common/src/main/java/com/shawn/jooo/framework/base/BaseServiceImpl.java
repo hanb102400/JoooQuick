@@ -303,9 +303,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
     @Override
     @Transactional
     public void deleteAll(List<ID> ids) {
-        ids.forEach(id -> {
-            getMapper().deleteByPrimaryKey(id);
-        });
+        ids.forEach(id -> getMapper().deleteByPrimaryKey(id));
     }
 
     /**
@@ -325,8 +323,8 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     private ID getPrimaryKey(T entity) {
         ID idValue = null;
-        Field[] fileds = getClassType().getDeclaredFields();
-        Optional<Field> optional = Arrays.stream(fileds).filter(field -> field.isAnnotationPresent(Id.class)).findFirst();
+        Field[] fields = getClassType().getDeclaredFields();
+        Optional<Field> optional = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Id.class)).findFirst();
         if (optional.isPresent()) {
             Field field = optional.get();
             try {

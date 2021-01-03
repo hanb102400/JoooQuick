@@ -1,0 +1,6 @@
+{
+  "outPath": "D:/md2", //指定文档的输出路径
+  "allInOne": true,  //是否将文档合并到一个文件中，一般推荐为true
+  "coverOld": true,  //是否覆盖旧的文件，主要用于mardown文件覆盖
+  "showAuthor":false,//是否显示接口作者名称，默认是true,不想显示可关闭
+}

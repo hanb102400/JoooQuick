@@ -5,6 +5,7 @@ import com.shawn.jooo.framework.mybatis.condition.Direction;
 import com.shawn.jooo.framework.mybatis.condition.MatchMode;
 import com.shawn.jooo.framework.mybatis.annotation.Query;
 import com.shawn.jooo.framework.mybatis.condition.QueryMode;
+import com.shawn.jooo.framework.response.annotation.TimeToJson;
 
 public class SysUserVo {
 
@@ -12,7 +13,7 @@ public class SysUserVo {
     private Long userId;
 
     @Query(query = QueryMode.EQ)
-    @OrderBy(direction = Direction.ASC)
+    @OrderBy(direction = Direction.ASC,site = 2)
     private String username;
 
     @Query(query = QueryMode.LIKE, match = MatchMode.ANY)
@@ -26,6 +27,8 @@ public class SysUserVo {
 
     @Query(query = QueryMode.EQ)
     @OrderBy(direction = Direction.DESC)
+
+    @TimeToJson
     private Long createTime;
 
     public Long getUserId() {

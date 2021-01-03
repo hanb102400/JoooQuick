@@ -15,7 +15,11 @@ public class QueryWrapper {
 
     Class<?> voClazz;
 
-    public QueryWrapper(Class<?> poClazz, Class<?> voClazz) {
+    public static QueryWrapper of(Class<?> poClazz, Class<?> voClazz) {
+        return new QueryWrapper(poClazz, voClazz);
+    }
+
+    private QueryWrapper(Class<?> poClazz, Class<?> voClazz) {
         this.poClazz = poClazz;
         this.voClazz = voClazz;
     }
@@ -26,5 +30,9 @@ public class QueryWrapper {
 
     public <VO> Page<VO> ofVoPage(Page page) {
         return QueryHelper.getVoPage(page, voClazz);
+    }
+
+    public <VO,PO> VO ofVo(PO po) {
+        return QueryHelper.getVo(po, voClazz);
     }
 }

@@ -22,23 +22,8 @@ import java.io.IOException;
 import java.util.*;
 
 
-//@Component
-public class MyFilterSecurityInterceptor extends FilterSecurityInterceptor implements Filter {
-
-    /**
-     * 拦截器，分别会
-     * 1. 调用 MyAccessDecisionManager 校验登录，
-     * 2. MyInvocationSecurityMetadataSource 获取权限
-     *
-     * @param request
-     * @param response
-     * @param chain
-     * @throws IOException
-     * @throws ServletException
-     */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        super.doFilter(request, response, chain);
-    }
+@Component
+public class MyFilterSecurityInterceptor extends FilterSecurityInterceptor  {
 
     @Autowired
     public void setSecurityMetadataSource(MyFilterSecurityMetadataSource myFilterSecurityMetadataSource) {

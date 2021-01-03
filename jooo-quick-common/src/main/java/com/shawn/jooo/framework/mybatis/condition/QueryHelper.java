@@ -25,10 +25,6 @@ public class QueryHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(QueryHelper.class);
 
-    public static QueryWrapper of(Class<?> poClazz, Class<?> voClazz) {
-        return new QueryWrapper(poClazz, voClazz);
-    }
-
     public static <VO> Example getExample(QueryVo<VO> query) {
         if (query == null) {
             return new Example();
@@ -53,6 +49,20 @@ public class QueryHelper {
         return example;
     }
 
+    public static <VO, PO> VO getVo(PO entity, Class<?> voClazz) {
+        if (entity != null) {
+            try {
+                VO vo = (VO) voClazz.newInstance();
+                BeanUtils.copyProperties(entity, vo);
+                return vo;
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("newInstance error", e);
+            }
+        }
+        return null;
+
+    }
+
     public static <VO> Page<VO> getVoPage(Page page, Class<?> voClazz) {
         List<VO> newList = new ArrayList();
         if (!CollectionUtils.isEmpty(page.getContent())) {
@@ -62,10 +72,8 @@ public class QueryHelper {
                     VO vo = (VO) voClazz.newInstance();
                     BeanUtils.copyProperties(obj, vo);
                     newList.add(vo);
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException("newInstance error", e);
                 }
             }
         }

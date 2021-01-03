@@ -23,7 +23,6 @@ public class Example {
 
     protected List<Criteria> oredCriteria;
 
-
     public Example() {
         oredCriteria = new ArrayList<>();
     }

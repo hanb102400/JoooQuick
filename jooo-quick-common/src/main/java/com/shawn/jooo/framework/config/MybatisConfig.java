@@ -46,29 +46,60 @@ public class MybatisConfig implements TransactionManagementConfigurer {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "sqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
 
+    /**
+     *  mybatis结果集映射插件
+     *
+     * @return
+     */
+    @Bean
+    MybatisResultMapPlugin mybatisResultMapPlugin() {
+        MybatisResultMapPlugin mybatisResultMapPlugin = new MybatisResultMapPlugin();
+        return mybatisResultMapPlugin;
+    }
+
+    /**
+     * mybatis分页插件
+     *
+     * @return
+     */
+    @Bean
+    MybatisPaginationPlugin mybatisPaginationPlugin() {
         //Mybatis分页插件
         MybatisPaginationPlugin mybatisPaginationPlugin = new MybatisPaginationPlugin();
         Properties prop = new Properties();
         prop.setProperty("dialect", "mysql");
         mybatisPaginationPlugin.setProperties(prop);
+        return mybatisPaginationPlugin;
+    }
 
-        //Mybatis结果映射插件
-        MybatisResultMapPlugin mybatisResultMapPlugin = new MybatisResultMapPlugin();
-
-        //Mybatis结果映射插件
+    /**
+     * mybatis日志插件
+     *
+     * @return
+     */
+    @Bean
+    MybatisSqlLogPlugin mybatisSqlLogPlugin() {
+        //日志插件
         MybatisSqlLogPlugin mybatisSqlLogPlugin = new MybatisSqlLogPlugin();
         Properties prop2 = new Properties();
         prop2.setProperty("show_sql", showSql);
         mybatisSqlLogPlugin.setProperties(prop2);
+        return mybatisSqlLogPlugin;
+    }
+
+    @Bean(name = "sqlSessionFactory")
+    public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
 
         //配置SqlSessionFactoryBean
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setTypeAliasesPackage(typeAliasesPackage);
-        bean.setPlugins(new Interceptor[]{mybatisResultMapPlugin, mybatisPaginationPlugin});
+        bean.setPlugins(new Interceptor[]{
+                mybatisResultMapPlugin(),
+                mybatisPaginationPlugin(),
+                mybatisSqlLogPlugin()
+        });
 
         //添加XML目录
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();

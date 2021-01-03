@@ -1,5 +1,6 @@
 package com.shawn.rbac.entity;
 import com.shawn.jooo.framework.base.BaseBean;
+import com.shawn.jooo.framework.response.annotation.TimeToJson;
 
 import java.io.Serializable;
 import javax.persistence.Id;
@@ -120,6 +121,7 @@ public class SysUser extends BaseBean implements Serializable {
      * createTime 创建时间
      */
     @Column(name="create_time")
+    @TimeToJson
     private Long createTime;
 
     /**

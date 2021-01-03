@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//rats.org//DTD Lu Generator Configuration 1.0//EN"
+        "http://rats.org/dtd/lu-generator-config_1_0.dtd">
+<configuration>
+
+    <properties resource="jdbc.properties"/>
+
+    <properties>
+        <!-- 工程和模板配置 -->
+        <property name="targetProject" value="G:/code/JoooQuick"></property>
+        <property name="templateDir" value="template/default"></property>
+        <property name="override" value="true"></property>
+        <property name="author" value="@jooo.gen"></property>
+        <property name="zip" value="false"></property>
+    </properties>
+
+    <!-- jdbc配置 -->
+    <jdbcConnection driverClassName="${jdbc.driverClassName}"
+                    url="${jdbc.url}"
+                    username="${jdbc.username}"
+                    password="${jdbc.password}">
+    </jdbcConnection>
+
+
+    <!-- 模板文件配置，此处按需自己定制编写 -->
+    <templates>
+        <template name="entity" packageName="com.shawn.rbac.entity" fileName="${className}.java"/>
+        <template name="mapper" packageName="com.shawn.rbac.dao" fileName="${className}Mapper.java"/>
+        <template name="dao" packageName="com.shawn.rbac.dao" fileName="${className}Dao.java"/>
+        <template name="service" packageName="com.shawn.rbac.service" fileName="${className}Service.java"/>
+        <template name="serviceImpl" packageName="com.shawn.rbac.service.impl" fileName="${className}ServiceImpl.java"/>
+        <template name="controller" packageName="com.shawn.rbac.controller" fileName="${className}Controller.java"/>
+        <template name="xmlMapper" packageName="mybatis.mapper" fileName="${className}Mapper.xml" type="xml"/>
+    </templates>
+
+    <!-- 模块配置 -->
+    <modules>
+        <module moduleDir="jooo-quick-admin"
+                sources="src/main/java"
+                resources="src/main/resources"
+                templates="entity,mapper,service,serviceImpl,controller"
+        />
+    </modules>
+
+
+    <!-- 配置需要生成代码的表，tableName：表名; className：类名 ,subPackageName: 子包名称
+       <table tableName="tb_user_test" className="UserTest">
+            <columnOverride column="testName"
+                            field="username"
+                            javaType="java.lang.Long"
+                            jdbcType="VARCHAR"
+                            ignore="true"/>
+
+            <columnOverride column="id" field="id"/>
+            <columnOverride column="type" field="atype"/>
+            <columnOverride column="username" field="ausername"/>
+            <columnOverride column="age" field="age"/>
+
+            <columnIgnore column="password" />
+            <columnIgnore column="status"/>
+
+        </table>
+    -->
+    <tables>
+        <table tableName="sys_dict_type" className="SysDictType"></table>
+        <table tableName="sys_dict_data" className="SysDictData"></table>
+        <table tableName="sys_depart" className="SysDepart"></table>
+        <table tableName="sys_user" className="SysUser"></table>
+        <table tableName="sys_menu" className="SysMenu"></table>
+        <table tableName="sys_user_role" className="SysUserRole"></table>
+        <table tableName="sys_role_menu" className="SysRoleMenu"></table>
+        <table tableName="sys_login_log" className="SysLoginLog"></table>
+        <table tableName="sys_operate_log" className="SysOperateLog"></table>
+    </tables>
+
+</configuration>

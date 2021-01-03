@@ -1,0 +1,305 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-family: '微软雅黑', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.header {
+    min-height: 56px;
+    padding: 0;
+}
+
+.header>.navbar {
+    background: #fff;
+    color: #404E67;
+    padding: 0;
+    -webkit-box-shadow: 0 0 11px rgba(0, 0, 0, .13);
+    box-shadow: 0 0 11px rgba(0, 0, 0, .13);
+    position: fixed;
+    display: block;
+    width: 100%;
+    z-index: 1028;
+}
+
+.navbar-wrapper .navbar-brand {
+    position: relative;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    float: left;
+    height: 36px;
+    text-align: center;
+    text-transform: uppercase;
+    width: 210px;
+    padding: 10px;
+    background-color: #404E67;
+    color: #dcdcdc;
+    text-shadow: 3px 3px 3px #f8bab0;
+    letter-spacing: 5px;
+}
+
+.navbar .container-fluid {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 15px;
+    padding-left: 15px;
+    width: 100%;
+}
+
+.navbar-nav {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.nav-left li.nav-item {
+    float: left;
+    padding: 0 10px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.nav-left li.nav-item a {
+    color: #404E67;
+    display: inline-block;
+    padding: 0 10px;
+    margin: 0 10px;
+    line-height: 56px;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+}
+
+.nav-left li.nav-item.active a:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #409eff;
+}
+
+.main-container-wrapper {
+    margin-top: 56px;
+    position: relative;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    background: #f6f7fb;
+}
+
+.content-wrapper {
+    margin-left: 230px;
+    position: relative;
+    display: block;
+    padding: 10px;
+    right: 0;
+}
+
+.content-inner {
+    height: calc(100vh - 76px);
+    background: #fff;
+}
+
+.content-inner iframe {
+    overflow: scroll;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.sidebar {
+    width: 230px;
+    float: left;
+    position: fixed;
+    background: #404e67;
+    -webkit-box-shadow: 0 0 11px rgba(0, 0, 0, .13);
+    box-shadow: 0 0 11px rgba(0, 0, 0, .13);
+    height: 100%;
+}
+
+.sidebar-navigation {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    opacity: 1;
+    padding: 25px 20px 8px;
+    text-transform: capitalize;
+    visibility: visible;
+    width: 100%;
+    -webkit-transform: rotateX(0deg);
+    -ms-transform: rotateX(0deg);
+    -moz-transform: rotateX(0deg);
+    -o-transform: rotateX(0deg);
+    transition: opacity .3s linear;
+    -webkit-transition: opacity .3s linear;
+    -ms-transition: opacity .3s linear;
+    -moz-transition: opacity .3s linear;
+    -o-transition: opacity .3s linear;
+    border-bottom: 2px solid transparent;
+    color: #999;
+}
+
+.sidebar .nav {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.sidebar .main-menu>li {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.sidebar .main-menu>li>a {
+    text-align: left;
+    padding: 8px 15px;
+    color: #dcdcdc;
+    display: block;
+    font-size: 14px;
+    text-decoration: none;
+    position: relative;
+    -webkit-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+}
+
+.sidebar .main-menu>li>a:after {
+    float: right;
+    font-style: normal;
+    margin-left: 3px;
+    font-size: 14px;
+    position: absolute;
+    right: 15px;
+    top: 5px;
+    font-family: FontAwesome;
+    padding-top: 5px;
+    transition: opacity .3s linear;
+    -webkit-transition: opacity .3s linear;
+    -ms-transition: opacity .3s linear;
+    -moz-transition: opacity .3s linear;
+    -o-transition: opacity .3s linear;
+    color: #dcdcdc;
+    content: "\f105";
+}
+
+.sidebar .main-menu>li>a>i {
+    font-size: 16px;
+    padding: 4px;
+    margin-right: 10px;
+    width: 23px;
+    display: inline-block;
+    height: 26px;
+    text-align: center;
+    color: #dcdcdc;
+}
+
+.sidebar .main-menu>li>a>span {
+    opacity: 1;
+    visibility: visible;
+    position: absolute;
+    top: 12px;
+    color: #dcdcdc;
+    text-align: left;
+    font-size: 14px;
+}
+
+.sidebar .main-menu>li.active a:before {
+    border-left-style: solid;
+    border-left-width: 3px;
+    border-left-color: #fe8a7d!important;
+    content: " ";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.sidebar .sub-menu li {
+    display: block;
+    list-style: outside none none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.sidebar .sub-menu li>a {
+    text-align: left;
+    padding: 8.7px 10px;
+    display: block;
+    font-size: 14px;
+    font-weight: 100;
+    text-decoration: none;
+    position: relative;
+    color: #dcdcdc;
+    padding-left: 30px;
+}
+
+.sidebar .sub-menu>li>a>span {
+    display: block;
+}
+
+.sidebar .sub-menu>li>a>span:before {
+    position: relative;
+    left: 0;
+    top: 0;
+    opacity: 1;
+    visibility: visible;
+    font-family: FontAwesome;
+    font-size: 12px;
+    padding-right: 5px;
+    color: #dcdcdc;
+    content: "\f105";
+}
+
+.sidebar .sub-menu>li.active>a,
+.sidebar .sub-menu>li:hover>a {
+    color: #fe8a7d!important;
+    font-weight: 600;
+}
+
+.sidebar .sub-menu>li.active>a>span:before,
+.sidebar .sub-menu>li:hover>a>span:before {
+    color: #fe8a7d!important;
+    font-weight: 600;
+}
+
+.query-form {
+    /* margin-top: 20px; */
+    padding-top: 25px;
+    background-color: #f2f2f2;
+}
+
+.table,
+.form {
+    margin-top: 30px;
+}
+
+.pagination {
+    text-align: right;
+    background: #fff;
+    padding-right: 30px;
+}
+
+.breadcrumb {
+    padding: 10px 10px 10px 10px;
+    border-bottom: 1px solid #DCDFE6;
+}
+
+.pagination .el-pagination__total {
+    float: left;
+}
+
+.pagination .el-pagination__sizes {
+    float: left;
+}

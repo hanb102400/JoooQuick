@@ -1,0 +1,20 @@
+{
+  "name": "admin-front",
+  "version": "1.0.0",
+  "description": "vue admin demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "shawn",
+  "license": "ISC",
+  "dependencies": {
+    "delete": "^1.1.0",
+    "vue": "^2.6.12"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-webserver": "^0.9.1",
+    "mockjs": "^1.1.0"
+  }
+}

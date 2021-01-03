@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<convert>
+    <types>
+        <!-- bit=1:Boolean bit>1:byte[]   -->
+        <type jdbcType="BIT" javaType="Boolean" javaTypeFull="java.lang.Boolean"></type>
+        <type jdbcType="BOOLEAN" javaType="Boolean" javaTypeFull="java.lang.Boolean"></type>
+
+        <!-- int -->
+        <type jdbcType="TINYINT" javaType="Short" javaTypeFull="java.lang.Short"></type>
+        <type jdbcType="SMALLINT" javaType="Short" javaTypeFull="java.lang.Short"></type>
+        <type jdbcType="INTEGER" javaType="Integer" javaTypeFull="java.lang.Integer"></type>
+        <type jdbcType="BIGINT" javaType="Long" javaTypeFull="java.lang.Long"></type>
+
+        <!-- float -->
+        <type jdbcType="FLOAT" javaType="Float" javaTypeFull="java.lang.Float"></type>
+        <type jdbcType="REAL" javaType="Float" javaTypeFull="java.lang.Float"></type>
+        <type jdbcType="DOUBLE" javaType="Double" javaTypeFull="java.lang.Double"></type>
+        <type jdbcType="NUMERIC" javaType="java.math.BigDecimal" javaTypeFull="java.math.BigDecimal"></type>
+        <type jdbcType="DECIMAL" javaType="java.math.BigDecimal" javaTypeFull="java.math.BigDecimal"></type>
+
+        <!-- string -->
+        <type jdbcType="CHAR" javaType="String" javaTypeFull="java.lang.String"></type>
+        <type jdbcType="VARCHAR" javaType="String" javaTypeFull="java.lang.String"></type>
+        <type jdbcType="LONGVARCHAR" javaType="String" javaTypeFull="java.lang.String"></type>
+        <type jdbcType="CLOB" javaType="String" javaTypeFull="java.lang.String"></type>
+
+        <!--date -->
+        <type jdbcType="DATE" javaType="java.util.Date" javaTypeFull="java.util.Date"></type>
+        <type jdbcType="TIME" javaType="java.util.Date" javaTypeFull="java.util.Date"></type>
+        <type jdbcType="TIMESTAMP" javaType="java.util.Date" javaTypeFull="java.util.Date"></type>
+
+        <!-- byte -->
+        <type jdbcType="BINARY" javaType="byte[]" javaTypeFull="byte[]"></type>
+        <type jdbcType="VARBINARY" javaType="byte[]" javaTypeFull="byte[]"></type>
+        <type jdbcType="LONGVARBINARY" javaType="byte[]" javaTypeFull="byte[]"></type>
+        <type jdbcType="NULL" javaType="void" javaTypeFull="void"></type>
+        <type jdbcType="OTHER" javaType="void" javaTypeFull="void"></type>
+        <type jdbcType="JAVA_OBJECT" javaType="Object" javaTypeFull="java.lang.Object"></type>
+        <type jdbcType="DISTINCT" javaType="Object" javaTypeFull="java.lang.Object"></type>
+        <type jdbcType="STRUCT" javaType="Object" javaTypeFull="java.lang.Object"></type>
+        <type jdbcType="ARRAY" javaType="Object[]" javaTypeFull="java.lang.Object[]"></type>
+        <type jdbcType="BLOB" javaType="byte[]" javaTypeFull="byte[]"></type>
+
+
+        <!--
+        <type dbType="bit" sqlType="REF"></type>
+        <type dbType="bit" sqlType="DATALINK"></type>
+
+        <type dbType="bit" sqlType="ROWID"></type>
+        <type dbType="bit" sqlType="NCHAR"></type>
+        <type dbType="bit" sqlType="NVARCHAR"></type>
+        <type dbType="bit" sqlType="LONGNVARCHAR"></type>
+        <type dbType="bit" sqlType="NCLOB"></type>
+        <type dbType="bit" sqlType="SQLXML"></type>
+        <type dbType="bit" sqlType="REF_CURSOR"></type>
+        <type dbType="bit" sqlType="TIME_WITH_TIMEZONE"></type>
+        <type dbType="bit" sqlType="TIMESTAMP_WITH_TIMEZONE"></type>
+        -->
+    </types>
+</convert>

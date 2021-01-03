@@ -1,0 +1,52 @@
+# server conf
+server:
+    port: 8003
+    servlet:
+        context-path: /
+
+spring:
+    # json
+    jackson:
+        default-property-inclusion: non_null
+        date-format: yyyy-MM-dd HH:mm:ss
+    # database conf
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/test?characterEncoding=UTF-8&&serverTimezone=GMT
+        username: root
+        password: 123456
+    redis:
+        host: 127.0.0.1
+        port: 6379
+        password: foobared
+        jedis:
+            pool:
+                max-active: 8
+                max-idle: 8
+                min-idle: 0
+                max-wait: -1
+
+# default conf
+mybatis:
+    mapperLocations: classpath*:default/mapper/**/*.xml
+    typeAliasesPackage: com.shawn.**.entity
+
+paging:
+  pageNoKey: pageNo
+  pageSizeKey: pageSize
+
+logging:
+    file:
+        path: ./
+        name: jooo_api.log
+    level:
+        root: debug
+
+app:
+
+    sign:
+      check: true
+      secret: 1357911
+    cacheExpireTime: 600
+    host: localhost
+    prefix: jooo

@@ -185,7 +185,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
     @Override
     public void saveOrUpdate(T entity) {
         ID id = getPrimaryKey(entity);
-        Assert.notNull(id, "get id column is null");
+        Assert.notNull(id, "get id column is null of " + entity.getClass().getName());
         if (id != null) {
             T result = getMapper().selectByPrimaryKey(id);
             if (result != null) {
@@ -275,9 +275,10 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
         List<T> list = getMapper().selectByExample(example);
         if (!CollectionUtils.isEmpty(list)) {
             if (list.size() == 1) {
-                return Optional.of(list.get(0));
+                return Optional.ofNullable(list.get(0));
             } else if (list.size() > 1) {
                 logger.error("has duplicate items result more than one: {}", list.size());
+                return Optional.ofNullable(list.get(0));
             }
         }
         return Optional.empty();

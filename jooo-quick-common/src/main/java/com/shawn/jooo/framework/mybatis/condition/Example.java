@@ -3,6 +3,7 @@ package com.shawn.jooo.framework.mybatis.condition;
 
 import com.shawn.jooo.framework.mybatis.reflect.Fn;
 import com.shawn.jooo.framework.mybatis.reflect.FnReflections;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,18 +70,19 @@ public class Example {
     }
 
     public <U> Criteria<U> and() {
-        if (oredCriteria.size() > 0) {
-            return oredCriteria.get(0);
-        } else {
+        if (CollectionUtils.isEmpty(oredCriteria)) {
             return createCriteria();
+        } else {
+            return oredCriteria.get(0);
+
         }
     }
 
     public <U> Criteria<U> and(Class<U> requiredType) {
-        if (oredCriteria.size() > 0) {
-            return oredCriteria.get(0);
+        if (CollectionUtils.isEmpty(oredCriteria)) {
+            return createCriteria(requiredType);
         } else {
-            return createCriteria();
+            return oredCriteria.get(0);
         }
     }
 
@@ -138,6 +140,7 @@ public class Example {
      * GeneratedCriteria
      */
     protected abstract static class GeneratedCriteria {
+
         protected List<Criterion> criteria;
 
         protected GeneratedCriteria() {
@@ -157,95 +160,151 @@ public class Example {
             return criteria;
         }
 
-        protected void addCriterion(String condition) {
+        protected <U> void addCriterion(String condition) {
             if (condition == null) {
                 throw new RuntimeException("Value for condition cannot be null");
             }
             criteria.add(new Criterion(condition));
         }
 
-        protected void addCriterion(String condition, Object value, String property) {
+        protected <U> void addCriterion(String condition, Object value, String property) {
             if (value == null) {
                 throw new RuntimeException("Value for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value));
         }
 
-        protected void addCriterion(String condition, Object value1, Object value2, String property) {
+        protected <U> void addCriterion(String condition, Object value1, Object value2, String property) {
             if (value1 == null || value2 == null) {
                 throw new RuntimeException("Between values for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value1, value2));
         }
 
-        public <U> Criteria<U> isNull(String property) {
+        public <U> Criteria<U> andIsNull(String property) {
             addCriterion(property + " is null");
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> isNotNull(String property) {
+        public <U> Criteria<U> andIsNotNull(String property) {
             addCriterion(property + " is not null");
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> eq(String property, Object value) {
+        public <U> Criteria<U> andEqualTo(String property, Object value) {
             addCriterion(property + " =", value, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> notEq(String property, Object value) {
+        public <U> Criteria<U> andNotEqualTo(String property, Object value) {
             addCriterion(property + " <>", value, property);
             return (Criteria) this;
         }
 
-        public <U> Criteria<U> gt(String property, Object value) {
+        public <U> Criteria<U> andGreaterThan(String property, Object value) {
             addCriterion(property + " >", value, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria gtOrEq(String property, Object value) {
+        public <U> Criteria andGreaterThanOrEqualTo(String property, Object value) {
             addCriterion(property + " >=", value, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> lt(String property, Object value) {
+        public <U> Criteria<U> andLessThan(String property, Object value) {
             addCriterion(property + " <", value, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> ltOrEq(String property, Object value) {
+        public <U> Criteria<U> andLessThanOrEqualTo(String property, Object value) {
             addCriterion(property + " <=", value, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> like(String property, Object value) {
+        public <U> Criteria<U> andLike(String property, Object value) {
             addCriterion(property + " like", value, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> notLike(String property, Object value) {
+        public <U> Criteria<U> andNotLike(String property, String value) {
             addCriterion(property + " not like", value, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> in(String property, Iterable values) {
+        public <U> Criteria<U> andIn(String property, Iterable values) {
             addCriterion(property + " in", values, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> notIn(String property, Iterable values) {
+        public <U> Criteria<U> andNotIn(String property, Iterable values) {
             addCriterion(property + " not in", values, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> between(String property, Object value1, Object value2) {
+        public <U> Criteria<U> andBetween(String property, Object value1, Object value2) {
             addCriterion(property + " between", value1, value2, property);
             return (Criteria<U>) this;
         }
 
-        public <U> Criteria<U> notBetween(String property, Object value1, Object value2) {
+        public <U> Criteria<U> andNotBetween(String property, Object value1, Object value2) {
             addCriterion(property + " not between", value1, value2, property);
             return (Criteria<U>) this;
+        }
+
+        public <U> Criteria<U> andIsNull(Fn<U, Object> fn) {
+            return andIsNull(FnReflections.fnToColumnName(fn));
+        }
+
+        public <U> Criteria<U> andIsNotNull(Fn<U, Object> fn) {
+            return andIsNotNull(FnReflections.fnToColumnName(fn));
+        }
+
+        public <U> Criteria<U> andEqualTo(Fn<U, Object> fn, Object value) {
+            return andEqualTo(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andNotEqualTo(Fn<U, Object> fn, Object value) {
+            return andNotEqualTo(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andGreaterThan(Fn<U, Object> fn, Object value) {
+            return andGreaterThan(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andGreaterThanOrEqualTo(Fn<U, Object> fn, Object value) {
+            return andGreaterThanOrEqualTo(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andLessThan(Fn<U, Object> fn, Object value) {
+            return andLessThan(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andLessThanOrEqualTo(Fn<U, Object> fn, Object value) {
+            return andLessThanOrEqualTo(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andLike(Fn<U, Object> fn, Object value) {
+            return andLike(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andNotLike(Fn<U, Object> fn, String value) {
+            return andNotLike(FnReflections.fnToColumnName(fn), value);
+        }
+
+        public <U> Criteria<U> andIn(Fn<U, Object> fn, Iterable values) {
+            return andIn(FnReflections.fnToColumnName(fn), values);
+        }
+
+        public <U> Criteria<U> andNotIn(Fn<U, Object> fn, Iterable values) {
+            return andNotIn(FnReflections.fnToColumnName(fn), values);
+        }
+
+        public <U> Criteria<U> andBetween(Fn<U, Object> fn, Object value1, Object value2) {
+            return andBetween(FnReflections.fnToColumnName(fn), value1, value2);
+        }
+
+        public <U> Criteria<U> andNotBetween(Fn<U, Object> fn, Object value1, Object value2) {
+            return andNotBetween(FnReflections.fnToColumnName(fn), value1, value2);
         }
 
     }
@@ -259,60 +318,60 @@ public class Example {
             super();
         }
 
-        public Criteria<U> isNull(Fn<U, Object> fn) {
-            return isNull(FnReflections.fnToColumnName(fn));
+        public <U> Criteria<U> andIsNull(Fn<U, Object> fn) {
+            return andIsNull(FnReflections.fnToColumnName(fn));
         }
 
-        public Criteria<U> isNotNull(Fn<U, Object> fn) {
-            return isNotNull(FnReflections.fnToColumnName(fn));
+        public <U> Criteria<U> andIsNotNull(Fn<U, Object> fn) {
+            return andIsNotNull(FnReflections.fnToColumnName(fn));
         }
 
-        public Criteria<U> eq(Fn<U, Object> fn, Object value) {
-            return eq(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andEqualTo(Fn<U, Object> fn, Object value) {
+            return andEqualTo(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> notEq(Fn<U, Object> fn, Object value) {
-            return notEq(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andNotEqualTo(Fn<U, Object> fn, Object value) {
+            return andNotEqualTo(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> gt(Fn<U, Object> fn, Object value) {
-            return gt(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andGreaterThan(Fn<U, Object> fn, Object value) {
+            return andGreaterThan(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> gtOrEq(Fn<U, Object> fn, Object value) {
-            return gtOrEq(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andGreaterThanOrEqualTo(Fn<U, Object> fn, Object value) {
+            return andGreaterThanOrEqualTo(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> lt(Fn<U, Object> fn, Object value) {
-            return lt(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andLessThan(Fn<U, Object> fn, Object value) {
+            return andLessThan(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> ltOrEq(Fn<U, Object> fn, Object value) {
-            return ltOrEq(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andLessThanOrEqualTo(Fn<U, Object> fn, Object value) {
+            return andLessThanOrEqualTo(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> like(Fn<U, Object> fn, Object value) {
-            return like(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andLike(Fn<U, Object> fn, Object value) {
+            return andLike(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> notLike(Fn<U, Object> fn, String value) {
-            return notLike(FnReflections.fnToColumnName(fn), value);
+        public <U> Criteria<U> andNotLike(Fn<U, Object> fn, String value) {
+            return andNotLike(FnReflections.fnToColumnName(fn), value);
         }
 
-        public Criteria<U> in(Fn<U, Object> fn, Iterable values) {
-            return in(FnReflections.fnToColumnName(fn), values);
+        public <U> Criteria<U> andIn(Fn<U, Object> fn, Iterable values) {
+            return andIn(FnReflections.fnToColumnName(fn), values);
         }
 
-        public Criteria<U> notIn(Fn<U, Object> fn, Iterable values) {
-            return notIn(FnReflections.fnToColumnName(fn), values);
+        public <U> Criteria<U> andNotIn(Fn<U, Object> fn, Iterable values) {
+            return andNotIn(FnReflections.fnToColumnName(fn), values);
         }
 
-        public Criteria<U> between(Fn<U, Object> fn, Object value1, Object value2) {
-            return between(FnReflections.fnToColumnName(fn), value1, value2);
+        public <U> Criteria<U> andBetween(Fn<U, Object> fn, Object value1, Object value2) {
+            return andBetween(FnReflections.fnToColumnName(fn), value1, value2);
         }
 
-        public Criteria<U> notBetween(Fn<U, Object> fn, Object value1, Object value2) {
-            return notBetween(FnReflections.fnToColumnName(fn), value1, value2);
+        public <U> Criteria<U> andNotBetween(Fn<U, Object> fn, Object value1, Object value2) {
+            return andNotBetween(FnReflections.fnToColumnName(fn), value1, value2);
         }
     }
 

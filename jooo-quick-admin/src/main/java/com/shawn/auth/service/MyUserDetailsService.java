@@ -29,7 +29,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
         //获取用户属性
         Example example = new Example();
-        example.createCriteria(SysUser.class).eq(SysUser::getUsername,username);
+        example.createCriteria(SysUser.class).andEqualTo(SysUser::getUsername,username);
         SysUser sysUser = sysUserService.findOne(example).orElse(null);
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户不存在");

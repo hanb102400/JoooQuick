@@ -1,14 +1,13 @@
 package com.shawn.rbac.controller;
 
 
-import com.shawn.jooo.framework.mybatis.annotation.Query;
 import com.shawn.jooo.framework.mybatis.condition.Example;
-import com.shawn.jooo.framework.mybatis.condition.QueryWrapper;
+import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
 import com.shawn.jooo.framework.page.Pageable;
-import com.shawn.rbac.vo.SysUserVo;
+import com.shawn.rbac.entity.SysRole;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
 import com.shawn.jooo.framework.page.Page;
 import com.shawn.jooo.framework.page.PageHelper;
 import com.shawn.jooo.framework.response.Response;
@@ -40,13 +39,9 @@ public class SysUserController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Long userId) {
-        //包装bean和vo类
-        QueryWrapper wrapper = QueryWrapper.of(SysUser.class, SysUserVo.class);
         //查询条件
         SysUser sysUser = sysUserService.findOneById(userId).get();
-        //转化vo
-        SysUserVo vo = wrapper.ofVo(sysUser);
-        return Responses.getSuccessResponse(vo);
+        return Responses.getSuccessResponse(sysUser);
     }
 
     /**
@@ -57,20 +52,16 @@ public class SysUserController extends BaseController {
      */
     @RequestMapping("/list")
     @ResponseBody
-    public Response list(@RequestBody(required = false) SysUserVo query) {
+    public Response list(@RequestBody(required = false) SysUser query) {
 
-        //包装bean和vo类
-        QueryWrapper wrapper = QueryWrapper.of(SysUser.class, SysUserVo.class);
         //查询条件
-        Example example = wrapper.ofExample(query);
-        example.<SysUser>and().notEq(SysUser::getStatus, -1);
+        Example example = QueryHelper.getExample(query);
+        example.<SysUser>and().andNotEqualTo(SysUser::getStatus, -1);
         //分页条件
         Pageable pageable = PageHelper.getPage();
         //查询
         Page<SysUser> page = sysUserService.findAll(example, pageable);
-        //转化vo
-        Page<SysUserVo> voPage = wrapper.ofVoPage(page);
-        return Responses.getSuccessResponse(voPage);
+        return Responses.getSuccessResponse(page);
     }
 
     /**
@@ -96,7 +87,6 @@ public class SysUserController extends BaseController {
     @RequestMapping("/edit")
     @ResponseBody
     public Response edit(@RequestBody SysUser sysUser) {
-        sysUser.setUpdateTime(System.currentTimeMillis());
         sysUserService.update(sysUser);
         return Responses.getDefaultSuccessResponse();
     }
@@ -104,13 +94,13 @@ public class SysUserController extends BaseController {
     /**
      * 删除
      *
-     * @param vo
+     * @param sysUser
      * @return
      */
     @RequestMapping(value = "/remove")
     @ResponseBody
-    public Response remove(@RequestBody SysUserVo vo) {
-        sysUserService.deleteById(vo.getUserId());
+    public Response remove(@RequestBody SysUser sysUser) {
+        sysUserService.deleteById(sysUser.getUserId());
         return Responses.getDefaultSuccessResponse();
     }
 

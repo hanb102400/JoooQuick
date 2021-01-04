@@ -167,7 +167,7 @@ public abstract class MybatisProvider {
                     "<if test=\"example.distinct\"> distinct </if>",
                     COLUMN_NAME_SQL(entityType),
                     "from  " + TABLE_NAME_SQL(entityType),
-                    EXAMPLE_MAP_WHERE_CLAUSE_SQL(),
+                    UPDATE_EXAMPLE_WHERE_CLAUSE_SQL(),
                     "<if test=\"example.orderByClause != null\">",
                     "   order by ${example.orderByClause}",
                     "</if>",
@@ -206,8 +206,10 @@ public abstract class MybatisProvider {
             String[] script = {
                     "<script>",
                     "update " + TABLE_NAME_SQL(entityType),
-                    "set " + UPDATE_COLUMN_PARAM_TEST_SQL(entityType),
-                    EXAMPLE_MAP_WHERE_CLAUSE_SQL(),
+                    "<set>" ,
+                    UPDATE_COLUMN_PARAM_TEST_SQL(entityType),
+                    "</set>" ,
+                    UPDATE_EXAMPLE_WHERE_CLAUSE_SQL(),
                     "</script>",
             };
             return String.join("\n", script);
@@ -226,7 +228,7 @@ public abstract class MybatisProvider {
                     "<script>",
                     "update " + TABLE_NAME_SQL(entityType),
                     "set " + UPDATE_COLUMN_PARAM_SQL(entityType),
-                    EXAMPLE_MAP_WHERE_CLAUSE_SQL(),
+                    UPDATE_EXAMPLE_WHERE_CLAUSE_SQL(),
                     "</script>",
             };
             return String.join("\n", script);
@@ -243,7 +245,9 @@ public abstract class MybatisProvider {
             String[] script = {
                     "<script>",
                     "update " + TABLE_NAME_SQL(entityType),
-                    "set " + UPDATE_COLUMN_PK_TEST_SQL(entityType),
+                    "<set>" ,
+                    UPDATE_COLUMN_PK_TEST_SQL(entityType),
+                    "</set>",
                     "where " + ID_PARAM_SQL(entityType),
                     "</script>",
             };
@@ -650,7 +654,7 @@ public abstract class MybatisProvider {
         return String.join("\n", script);
     }
 
-    private static String EXAMPLE_MAP_WHERE_CLAUSE_SQL() {
+    private static String UPDATE_EXAMPLE_WHERE_CLAUSE_SQL() {
         String[] script = {
                 "<if test=\"_parameter != null\">",
                 "   <where>",

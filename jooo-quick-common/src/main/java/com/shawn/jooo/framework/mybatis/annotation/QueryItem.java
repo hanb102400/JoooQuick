@@ -1,8 +1,8 @@
 package com.shawn.jooo.framework.mybatis.annotation;
 
 
-import com.shawn.jooo.framework.mybatis.condition.MatchMode;
-import com.shawn.jooo.framework.mybatis.condition.QueryMode;
+import com.shawn.jooo.framework.mybatis.condition.Match;
+import com.shawn.jooo.framework.mybatis.condition.ExpMode;
 import org.springframework.web.bind.annotation.Mapping;
 
 import java.lang.annotation.*;
@@ -11,9 +11,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Mapping
 @Documented
-public @interface Query {
+public @interface QueryItem {
 
-    QueryMode query() default QueryMode.EQ;
+    ExpMode value() default ExpMode.EQ;
 
-    MatchMode match() default MatchMode.ANY;
+    Match match() default Match.ANY;
 }

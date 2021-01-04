@@ -7,9 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.*;
 
 /**
  * BeanReflections
@@ -79,6 +79,11 @@ public class BeanReflections {
         return null;
     }
 
+    public static boolean isSerialVersionUID(Field field){
+        return "serialVersionUID".equals(field.getName());
+    }
+
+
     public static String getColumnTypeName(Field field) {
         Class<?> type = field.getType();
         return JdbcTypes.calculateJdbcTypeName(type);
@@ -96,6 +101,19 @@ public class BeanReflections {
     public static String getFieldTypeName(Field field) {
         Class<?> type = field.getType();
         return type.getName();
+    }
+
+    public static Object invokeGetMethod(Field field, Object obj) {
+        Object value;
+        try {
+            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), obj.getClass());
+            Method getMethod = pd.getReadMethod();
+            value = getMethod.invoke(obj);
+        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("invokeGetMethod error:" + obj.getClass().getName() + ":" + field.getName());
+
+        }
+        return value;
     }
 
     public static Class<?> getFieldType(Field field) {

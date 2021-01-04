@@ -2,7 +2,6 @@ package com.shawn.jooo.framework.base;
 
 
 import com.shawn.jooo.framework.mybatis.condition.Example;
-import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
 import com.shawn.jooo.framework.mybatis.reflect.ClassTypeAdapt;
 import com.shawn.jooo.framework.page.Page;
 import com.shawn.jooo.framework.page.PageImpl;
@@ -163,7 +162,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     @Override
     public void update(T entity) {
-        getMapper().updateByPrimaryKey(entity);
+        getMapper().updateByPrimaryKeySelective(entity);
     }
 
     /**
@@ -174,7 +173,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     @Override
     public void update(T entity, Example example) {
-        getMapper().updateByExample(entity, example);
+        getMapper().updateByExampleSelective(entity, example);
     }
 
     /**

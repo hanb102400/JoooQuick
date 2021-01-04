@@ -1,4 +1,4 @@
-package com.shawn.jooo.framework.response.convert;
+package com.shawn.jooo.framework.json.convert;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
-import com.shawn.jooo.framework.response.annotation.TimeToJson;
+import com.shawn.jooo.framework.json.annotation.Timestamp;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -45,7 +45,7 @@ public class TimeToJsonSerializer extends JsonSerializer<Object> implements Cont
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider serializerProvider, BeanProperty beanProperty) throws JsonMappingException {
         if (beanProperty != null) {
-            TimeToJson ann = beanProperty.getAnnotation(TimeToJson.class);
+            Timestamp ann = beanProperty.getAnnotation(Timestamp.class);
             if (ann != null) {
                 unit = ann.unit();
                 format = ann.format();

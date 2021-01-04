@@ -4,11 +4,11 @@ package com.shawn.jooo.framework.mybatis.condition;
 /**
  * like的匹配模式工具
  * <p>
- * like的exact描述，参考实现org.hibernate.criterion.MatchMode
+ * like的exact描述，参考实现org.hibernate.criterion.Match
  *
  * @author shawn
  */
-public enum MatchMode {
+public enum Match {
 
     EXACT {
         @Override
@@ -35,7 +35,7 @@ public enum MatchMode {
         }
     };
 
-    MatchMode() {
+    Match() {
     }
 
     public abstract String contact(String var1);

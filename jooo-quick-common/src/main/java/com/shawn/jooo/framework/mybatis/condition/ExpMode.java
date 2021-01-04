@@ -1,6 +1,6 @@
 package com.shawn.jooo.framework.mybatis.condition;
 
-public enum QueryMode {
+public enum ExpMode {
     NONE,
     EQ,
     NOT_EQ,
@@ -16,7 +16,7 @@ public enum QueryMode {
     //NOT_IN,
     //BETWEEN,
     //NOT_BETWEEN;
-    private QueryMode() {
+    private ExpMode() {
     }
 }
 

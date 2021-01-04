@@ -1,17 +1,21 @@
 package com.shawn.jooo.framework.mybatis.dialect;
+
 /**
  * @author shawn
  */
 public class DialectFactory {
 
-    public static Dialect getDialect(String dialectName) throws Exception{
+    private static final String MYSQL_DIALECT = "mysql";
 
-        if("mysql".equals(dialectName)){
+    private static final String ORACLE_DIALECT = "oracle";
+
+    public static Dialect getDialect(String dialectName) throws Exception {
+
+        if (MYSQL_DIALECT.equals(dialectName)) {
             return new MysqlDialect();
-        }
-        else if("oracle".equals(dialectName)){
+        } else if (ORACLE_DIALECT.equals(dialectName)) {
             return new OracleDialect();
-        }else{
+        } else {
             throw new Exception("Cannot get the dialect : " + dialectName);
         }
 

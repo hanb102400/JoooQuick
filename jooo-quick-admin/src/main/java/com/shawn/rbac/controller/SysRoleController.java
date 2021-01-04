@@ -2,16 +2,13 @@ package com.shawn.rbac.controller;
 
 
 import com.shawn.jooo.framework.mybatis.condition.Example;
-import com.shawn.jooo.framework.mybatis.condition.QueryWrapper;
+import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
 import com.shawn.jooo.framework.page.Pageable;
 import com.shawn.jooo.framework.request.Requests;
 import com.shawn.rbac.entity.SysUser;
-import com.shawn.rbac.vo.SysRoleVo;
-import com.shawn.rbac.vo.SysUserVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
 import com.shawn.jooo.framework.page.Page;
 import com.shawn.jooo.framework.page.PageHelper;
 import com.shawn.jooo.framework.response.Response;
@@ -43,13 +40,9 @@ public class SysRoleController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Long roleId) {
-        //包装bean和vo类
-        QueryWrapper wrapper = QueryWrapper.of(SysRole.class, SysRoleVo.class);
-        //查询条件
+
         SysRole sysRole = sysRoleService.findOneById(roleId).get();
-        //转化vo
-        SysRoleVo vo = wrapper.ofVo(sysRole);
-        return Responses.getSuccessResponse(vo);
+        return Responses.getSuccessResponse(sysRole);
     }
 
     /**
@@ -60,21 +53,15 @@ public class SysRoleController extends BaseController {
      */
     @RequestMapping("/list")
     @ResponseBody
-    public Response list(@RequestBody(required = false) SysRoleVo query) {
-
-
-        //包装bean和vo类
-        QueryWrapper wrapper = QueryWrapper.of(SysRole.class, SysRoleVo.class);
+    public Response list(@RequestBody(required = false) SysRole query) {
         //查询条件
-        Example example = wrapper.ofExample(query);
-        example.<SysUser>and().notEq(SysUser::getStatus, -1);
+        Example example = QueryHelper.getExample(query);
+        example.<SysUser>and().andNotEqualTo(SysUser::getStatus, -1);
         //分页条件
         Pageable pageable = PageHelper.getPage();
         //查询
         Page<SysRole> page = sysRoleService.findAll(example, pageable);
-        //转化vo
-        Page<SysUserVo> voPage = wrapper.ofVoPage(page);
-        return Responses.getSuccessResponse(voPage);
+        return Responses.getSuccessResponse(page);
     }
 
     /**
@@ -111,14 +98,14 @@ public class SysRoleController extends BaseController {
     /**
      * 删除
      *
-     * @param vo
+     * @param sysRole
      * @return
      */
     @RequestMapping(value = "/remove")
     @ResponseBody
-    public Response remove(@RequestParam SysRoleVo vo) {
-        Requests.checkNotNull(vo.getRoleId());
-        sysRoleService.deleteById(vo.getRoleId());
+    public Response remove(@RequestParam SysRole sysRole) {
+        Requests.checkNotNull(sysRole.getRoleId());
+        sysRoleService.deleteById(sysRole.getRoleId());
         return Responses.getDefaultSuccessResponse();
     }
 

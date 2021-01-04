@@ -1,17 +1,13 @@
 package com.shawn.jooo.framework.mybatis.condition;
 
 import com.shawn.jooo.framework.mybatis.annotation.OrderBy;
-import com.shawn.jooo.framework.mybatis.annotation.Query;
+import com.shawn.jooo.framework.mybatis.annotation.QueryItem;
+import com.shawn.jooo.framework.mybatis.annotation.QueryForm;
 import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
-import com.shawn.jooo.framework.page.Page;
-import com.shawn.jooo.framework.page.PageImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,147 +21,94 @@ public class QueryHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(QueryHelper.class);
 
-    public static <VO> Example getExample(QueryVo<VO> query) {
+
+    public static <E> Example getExample(E query) {
         if (query == null) {
             return new Example();
         }
-        return getExample(query, query.getGenericClass());
-    }
-
-    public static <PO> Example getExample(PO entity) {
-        if (entity == null) {
-            return new Example();
-        }
-        return getExample(entity, entity.getClass());
-    }
-
-    public static <VO> Example getExample(VO query, Class<?> entityClazz) {
-        if (query == null) {
-            return new Example();
-        }
-        Example example = createExample(query, query.getClass(), entityClazz);
-        String orderBy = createSort(query.getClass(), entityClazz);
+        Example example = createExample(query);
+        String orderBy = createSort(query.getClass());
         example.setOrderByClause(orderBy);
         return example;
     }
 
-    public static <VO, PO> VO getVo(PO entity, Class<?> voClazz) {
-        if (entity != null) {
-            try {
-                VO vo = (VO) voClazz.newInstance();
-                BeanUtils.copyProperties(entity, vo);
-                return vo;
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException("newInstance error", e);
-            }
-        }
-        return null;
+    private static <E> Example createExample(E query) {
 
-    }
-
-    public static <VO> Page<VO> getVoPage(Page page, Class<?> voClazz) {
-        List<VO> newList = new ArrayList();
-        if (!CollectionUtils.isEmpty(page.getContent())) {
-            List list = page.getContent();
-            for (Object obj : list) {
-                try {
-                    VO vo = (VO) voClazz.newInstance();
-                    BeanUtils.copyProperties(obj, vo);
-                    newList.add(vo);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException("newInstance error", e);
-                }
-            }
-        }
-        return new PageImpl(newList, page.getPageNo(), page.getPageSize(), page.getTotalCount());
-    }
-
-    private static <VO> Example createExample(VO query, Class<?> voClazz, Class<?> entityClazz) {
+        Class<?> queryClazz = query.getClass();
+        boolean custom = queryClazz.isAnnotationPresent(QueryForm.class);
         Example example = new Example();
         Example.Criteria criteria = example.createCriteria();
+        Field[] queryFiles = queryClazz.getDeclaredFields();
+        for (Field queryField : queryFiles) {
 
-        Field[] beanFiles = voClazz.getDeclaredFields();
-        for (Field queryField : beanFiles) {
-
-            if (queryField.isAnnotationPresent(Query.class)) {
-                String fieldName = BeanReflections.getFiledName(queryField);
-                Object value;
-                try {
-                    PropertyDescriptor pd = new PropertyDescriptor(fieldName, voClazz);
-                    Method getMethod = pd.getReadMethod();
-                    value = getMethod.invoke(query);
-                } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-                    logger.warn("query field get method not found {}", fieldName);
-                    continue;
+            if (BeanReflections.isSerialVersionUID(queryField)) {
+                continue;
+            }
+            String columnName = BeanReflections.getColumnName(queryField);
+            Object value = BeanReflections.invokeGetMethod(queryField, query);
+            if (!custom) {
+                if (value != null) {
+                    criteria.andEqualTo(columnName, value);
                 }
-                Query q = queryField.getAnnotation(Query.class);
-                QueryMode queryMode = q.query();
-                MatchMode match = q.match();
+            } else {
+                if (queryField.isAnnotationPresent(QueryItem.class)) {
 
-                try {
-                    Field field = entityClazz.getDeclaredField(queryField.getName());
-                    String columnName = BeanReflections.getColumnName(field);
+                    QueryItem q = queryField.getAnnotation(QueryItem.class);
+                    ExpMode queryMode = q.value();
+                    Match match = q.match();
+
                     if (value != null) {
                         switch (queryMode) {
                             case EQ:
-                                criteria.eq(columnName, value);
+                                criteria.andEqualTo(columnName, value);
                                 break;
                             case NOT_EQ:
-                                criteria.notEq(columnName, value);
+                                criteria.andNotEqualTo(columnName, value);
                                 break;
                             case GT:
-                                criteria.gt(columnName, value);
+                                criteria.andGreaterThan(columnName, value);
                                 break;
                             case GT_OR_EQ:
-                                criteria.gtOrEq(columnName, value);
+                                criteria.andGreaterThanOrEqualTo(columnName, value);
                                 break;
                             case LT:
-                                criteria.lt(columnName, value);
+                                criteria.andLessThan(columnName, value);
                                 break;
                             case LT_OR_EQ:
-                                criteria.ltOrEq(columnName, value);
+                                criteria.andLessThanOrEqualTo(columnName, value);
                                 break;
                             case LIKE:
-                                criteria.like(columnName, match.contact(value.toString()));
+                                criteria.andLike(columnName, match.contact(value.toString()));
                                 break;
                             case NOT_LIKE:
-                                criteria.notLike(columnName, match.contact(value.toString()));
+                                criteria.andNotLike(columnName, match.contact(value.toString()));
                                 break;
                         }
-
                     }
-                } catch (NoSuchFieldException e) {
-                    logger.warn("Example: warn {} has no method {}", entityClazz.getName(), queryField.getName());
                 }
             }
         }
         return example;
     }
 
-    public static String createSort(Class<?> voClazz, Class<?> entityClazz) {
-
-        Field[] beanFiles = voClazz.getDeclaredFields();
+    public static String createSort(Class<?> queryClazz) {
+        Field[] beanFiles = queryClazz.getDeclaredFields();
         List<Sort> sorts = new ArrayList();
         for (Field queryField : beanFiles) {
             if (queryField.isAnnotationPresent(OrderBy.class)) {
 
-                OrderBy ob = queryField.getAnnotation(OrderBy.class);
-                Direction direction = ob.direction();
-                int site = ob.site();
+                OrderBy orderBy = queryField.getAnnotation(OrderBy.class);
 
-                try {
-                    Field field = entityClazz.getDeclaredField(queryField.getName());
-                    String columnName = BeanReflections.getColumnName(field);
-                    Sort sort = Sort.orderBy(direction, columnName, site);
-                    sorts.add(sort);
-                } catch (NoSuchFieldException e) {
-                    logger.warn("Example: warn {} has no method {}", entityClazz.getName(), queryField.getName());
-                }
+                Direction direction = orderBy.direction();
+                int site = orderBy.site();
 
+                String columnName = BeanReflections.getColumnName(queryField);
+                Sort sort = Sort.orderBy(direction, columnName, site);
+                sorts.add(sort);
             }
         }
 
-        if (sorts.size() > 0) {
+        if (!CollectionUtils.isEmpty(sorts)) {
             return Sort.toOrderBySql(sorts.toArray(new Sort[sorts.size()]));
         }
         return null;

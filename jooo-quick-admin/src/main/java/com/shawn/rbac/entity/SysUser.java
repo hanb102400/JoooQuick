@@ -3,9 +3,9 @@ package com.shawn.rbac.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shawn.jooo.framework.base.BaseBean;
 import com.shawn.jooo.framework.json.annotation.Timestamp;
-import com.shawn.jooo.framework.mybatis.annotation.QueryItem;
+import com.shawn.jooo.framework.mybatis.annotation.QueryField;
 import com.shawn.jooo.framework.mybatis.annotation.QueryForm;
-import com.shawn.jooo.framework.mybatis.condition.ExpMode;
+import com.shawn.jooo.framework.mybatis.condition.Criteria;
 
 import java.io.Serializable;
 import javax.persistence.Id;
@@ -32,7 +32,7 @@ public class SysUser extends BaseBean implements Serializable {
      */
     @Id
     @Column(name = "user_id")
-    @QueryItem(ExpMode.EQ)
+    @QueryField(Criteria.EQ)
     private Long userId;
 
     /**
@@ -45,7 +45,7 @@ public class SysUser extends BaseBean implements Serializable {
      * username 登录账号
      */
     @Column(name = "username")
-    @QueryItem(ExpMode.EQ)
+    @QueryField(Criteria.EQ)
     private String username;
 
     /**
@@ -58,7 +58,7 @@ public class SysUser extends BaseBean implements Serializable {
     /**
      * nickname 昵称
      */
-    @QueryItem(ExpMode.LIKE)
+    @QueryField(Criteria.LIKE)
     @Column(name = "nickname")
     private String nickname;
 
@@ -78,7 +78,7 @@ public class SysUser extends BaseBean implements Serializable {
      * mobile 手机号码
      */
     @Column(name = "mobile")
-    @QueryItem(ExpMode.LIKE)
+    @QueryField(Criteria.LIKE)
     private String mobile;
 
     /**
@@ -115,7 +115,7 @@ public class SysUser extends BaseBean implements Serializable {
      * status 帐号状态（0正常 1停用，-1删除）
      */
     @Column(name = "status")
-    @QueryItem(ExpMode.EQ)
+    @QueryField(Criteria.EQ)
     private Short status;
 
     /**

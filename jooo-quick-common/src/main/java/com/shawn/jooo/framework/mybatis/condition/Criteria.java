@@ -1,6 +1,6 @@
 package com.shawn.jooo.framework.mybatis.condition;
 
-public enum ExpMode {
+public enum Criteria {
     NONE,
     EQ,
     NOT_EQ,
@@ -16,7 +16,7 @@ public enum ExpMode {
     //NOT_IN,
     //BETWEEN,
     //NOT_BETWEEN;
-    private ExpMode() {
+    private Criteria() {
     }
 }
 

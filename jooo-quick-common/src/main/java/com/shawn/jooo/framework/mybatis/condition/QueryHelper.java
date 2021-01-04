@@ -1,7 +1,7 @@
 package com.shawn.jooo.framework.mybatis.condition;
 
 import com.shawn.jooo.framework.mybatis.annotation.OrderBy;
-import com.shawn.jooo.framework.mybatis.annotation.QueryItem;
+import com.shawn.jooo.framework.mybatis.annotation.QueryField;
 import com.shawn.jooo.framework.mybatis.annotation.QueryForm;
 import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
 import org.slf4j.Logger;
@@ -51,10 +51,10 @@ public class QueryHelper {
                     criteria.andEqualTo(columnName, value);
                 }
             } else {
-                if (queryField.isAnnotationPresent(QueryItem.class)) {
+                if (queryField.isAnnotationPresent(QueryField.class)) {
 
-                    QueryItem q = queryField.getAnnotation(QueryItem.class);
-                    ExpMode queryMode = q.value();
+                    QueryField q = queryField.getAnnotation(QueryField.class);
+                    Criteria queryMode = q.value();
                     Match match = q.match();
 
                     if (value != null) {

@@ -10,7 +10,7 @@
         <!-- 工程和模板配置 -->
         <property name="targetProject" value="G:/code/JoooQuick"></property>
         <property name="templateDir" value="template/default"></property>
-        <property name="override" value="true"></property>
+        <property name="override" value="false"></property>
         <property name="author" value="@jooo.gen"></property>
         <property name="zip" value="false"></property>
     </properties>
@@ -62,16 +62,26 @@
 
         </table>
     -->
+    <!--
+     <views>
+      <view className="SysDictType" pages="query,detail,add,edit,list,export">
+          <form field="id" input="text"  mode="EQ" match="" pages="query,detail,add,edit,list,export"/>
+          <form field="atype"  select="text"  mode="EQ" match="" pages="query,detail,add,edit,list,export"/>
+      </view>
+  </views>
+  -->
     <tables>
         <table tableName="sys_dict_type" className="SysDictType"></table>
         <table tableName="sys_dict_data" className="SysDictData"></table>
         <table tableName="sys_depart" className="SysDepart"></table>
         <table tableName="sys_user" className="SysUser"></table>
+        <table tableName="sys_role" className="SysRole"></table>
         <table tableName="sys_menu" className="SysMenu"></table>
         <table tableName="sys_user_role" className="SysUserRole"></table>
         <table tableName="sys_role_menu" className="SysRoleMenu"></table>
         <table tableName="sys_login_log" className="SysLoginLog"></table>
         <table tableName="sys_operate_log" className="SysOperateLog"></table>
     </tables>
+
 
 </configuration>

@@ -1,5 +1,7 @@
 package com.shawn.rbac.entity;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shawn.jooo.framework.base.BaseBean;
+import com.shawn.jooo.framework.tree.TreeNode;
 
 import java.io.Serializable;
 import javax.persistence.Id;
@@ -15,7 +17,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @Table(name="sys_depart")
-public class SysDepart extends BaseBean implements Serializable {
+public class SysDepart extends TreeNode<SysDepart> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

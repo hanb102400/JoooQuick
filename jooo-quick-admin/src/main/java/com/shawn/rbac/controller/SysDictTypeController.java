@@ -37,7 +37,7 @@ public class SysDictTypeController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer dictId) {
         SysDictType sysDictType = sysDictTypeService.findOneById(dictId).get();
-        return Responses.getSuccessResponse(sysDictType);
+        return Responses.success(sysDictType);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SysDictTypeController extends BaseController {
     @ResponseBody
     public Response list(SysDictType sysDictType) {
         Page page = sysDictTypeService.findAll(QueryHelper.getExample(sysDictType),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +61,22 @@ public class SysDictTypeController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysDictType sysDictType) {
+    public Response add(@RequestBody SysDictType sysDictType) {
         sysDictTypeService.save(sysDictType);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param dictId
      * @param sysDictType
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer dictId, SysDictType sysDictType) {
+    public Response edit(@RequestBody SysDictType sysDictType) {
         sysDictTypeService.update(sysDictType);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SysDictTypeController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer dictId) {
         sysDictTypeService.deleteById(dictId);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

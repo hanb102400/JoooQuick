@@ -37,7 +37,7 @@ public class SysLoginLogController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer loginId) {
         SysLoginLog sysLoginLog = sysLoginLogService.findOneById(loginId).get();
-        return Responses.getSuccessResponse(sysLoginLog);
+        return Responses.success(sysLoginLog);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SysLoginLogController extends BaseController {
     @ResponseBody
     public Response list(SysLoginLog sysLoginLog) {
         Page page = sysLoginLogService.findAll(QueryHelper.getExample(sysLoginLog),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +61,22 @@ public class SysLoginLogController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysLoginLog sysLoginLog) {
+    public Response add(@RequestBody SysLoginLog sysLoginLog) {
         sysLoginLogService.save(sysLoginLog);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param loginId
      * @param sysLoginLog
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer loginId, SysLoginLog sysLoginLog) {
+    public Response edit(@RequestBody SysLoginLog sysLoginLog) {
         sysLoginLogService.update(sysLoginLog);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SysLoginLogController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer loginId) {
         sysLoginLogService.deleteById(loginId);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

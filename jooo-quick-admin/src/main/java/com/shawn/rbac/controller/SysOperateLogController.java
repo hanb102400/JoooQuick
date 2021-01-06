@@ -37,7 +37,7 @@ public class SysOperateLogController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer operId) {
         SysOperateLog sysOperateLog = sysOperateLogService.findOneById(operId).get();
-        return Responses.getSuccessResponse(sysOperateLog);
+        return Responses.success(sysOperateLog);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SysOperateLogController extends BaseController {
     @ResponseBody
     public Response list(SysOperateLog sysOperateLog) {
         Page page = sysOperateLogService.findAll(QueryHelper.getExample(sysOperateLog),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +61,22 @@ public class SysOperateLogController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysOperateLog sysOperateLog) {
+    public Response add(@RequestBody SysOperateLog sysOperateLog) {
         sysOperateLogService.save(sysOperateLog);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param operId
      * @param sysOperateLog
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer operId, SysOperateLog sysOperateLog) {
+    public Response edit(@RequestBody SysOperateLog sysOperateLog) {
         sysOperateLogService.update(sysOperateLog);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SysOperateLogController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer operId) {
         sysOperateLogService.deleteById(operId);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

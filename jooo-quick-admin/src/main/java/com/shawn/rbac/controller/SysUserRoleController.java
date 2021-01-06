@@ -37,7 +37,7 @@ public class SysUserRoleController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer id) {
         SysUserRole sysUserRole = sysUserRoleService.findOneById(id).get();
-        return Responses.getSuccessResponse(sysUserRole);
+        return Responses.success(sysUserRole);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SysUserRoleController extends BaseController {
     @ResponseBody
     public Response list(SysUserRole sysUserRole) {
         Page page = sysUserRoleService.findAll(QueryHelper.getExample(sysUserRole),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +61,22 @@ public class SysUserRoleController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysUserRole sysUserRole) {
+    public Response add(@RequestBody SysUserRole sysUserRole) {
         sysUserRoleService.save(sysUserRole);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param id
      * @param sysUserRole
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer id, SysUserRole sysUserRole) {
+    public Response edit(@RequestBody SysUserRole sysUserRole) {
         sysUserRoleService.update(sysUserRole);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SysUserRoleController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer id) {
         sysUserRoleService.deleteById(id);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

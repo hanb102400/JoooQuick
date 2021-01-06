@@ -37,7 +37,7 @@ public class SysRoleMenuController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer id) {
         SysRoleMenu sysRoleMenu = sysRoleMenuService.findOneById(id).get();
-        return Responses.getSuccessResponse(sysRoleMenu);
+        return Responses.success(sysRoleMenu);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SysRoleMenuController extends BaseController {
     @ResponseBody
     public Response list(SysRoleMenu sysRoleMenu) {
         Page page = sysRoleMenuService.findAll(QueryHelper.getExample(sysRoleMenu),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +61,22 @@ public class SysRoleMenuController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysRoleMenu sysRoleMenu) {
+    public Response add(@RequestBody SysRoleMenu sysRoleMenu) {
         sysRoleMenuService.save(sysRoleMenu);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param id
      * @param sysRoleMenu
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer id, SysRoleMenu sysRoleMenu) {
+    public Response edit(@RequestBody SysRoleMenu sysRoleMenu) {
         sysRoleMenuService.update(sysRoleMenu);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SysRoleMenuController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer id) {
         sysRoleMenuService.deleteById(id);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

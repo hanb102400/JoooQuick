@@ -79,7 +79,7 @@ public class BeanReflections {
         return null;
     }
 
-    public static boolean isSerialVersionUID(Field field){
+    public static boolean isSerialVersionUID(Field field) {
         return "serialVersionUID".equals(field.getName());
     }
 
@@ -104,13 +104,17 @@ public class BeanReflections {
     }
 
     public static Object invokeGetMethod(Field field, Object obj) {
+        return invokeGetMethod(field.getName(), obj);
+    }
+
+    public static Object invokeGetMethod(String fieldName, Object obj) {
         Object value;
         try {
-            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), obj.getClass());
+            PropertyDescriptor pd = new PropertyDescriptor(fieldName, obj.getClass());
             Method getMethod = pd.getReadMethod();
             value = getMethod.invoke(obj);
         } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("invokeGetMethod error:" + obj.getClass().getName() + ":" + field.getName());
+            throw new RuntimeException("invokeGetMethod error:" + obj.getClass().getName() + ":" + fieldName);
 
         }
         return value;

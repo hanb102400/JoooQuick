@@ -37,7 +37,7 @@ public class SysMenuController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer menuId) {
         SysMenu sysMenu = sysMenuService.findOneById(menuId).get();
-        return Responses.getSuccessResponse(sysMenu);
+        return Responses.success(sysMenu);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SysMenuController extends BaseController {
     @ResponseBody
     public Response list(SysMenu sysMenu) {
         Page page = sysMenuService.findAll(QueryHelper.getExample(sysMenu),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +61,22 @@ public class SysMenuController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysMenu sysMenu) {
+    public Response add(@RequestBody SysMenu sysMenu) {
         sysMenuService.save(sysMenu);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param menuId
      * @param sysMenu
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer menuId, SysMenu sysMenu) {
+    public Response edit(@RequestBody SysMenu sysMenu) {
         sysMenuService.update(sysMenu);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SysMenuController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer menuId) {
         sysMenuService.deleteById(menuId);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

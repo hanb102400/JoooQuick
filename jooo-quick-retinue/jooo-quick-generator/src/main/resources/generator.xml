@@ -10,7 +10,7 @@
         <!-- 工程和模板配置 -->
         <property name="targetProject" value="G:/code/JoooQuick"></property>
         <property name="templateDir" value="template/default"></property>
-        <property name="override" value="false"></property>
+        <property name="override" value="true"></property>
         <property name="author" value="@jooo.gen"></property>
         <property name="zip" value="false"></property>
     </properties>

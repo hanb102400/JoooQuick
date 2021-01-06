@@ -22,9 +22,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -105,7 +103,11 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     @Override
     public List<T> findAll() {
-        return getMapper().selectByExample(null);
+        List<T> list =  getMapper().selectByExample(null);
+        if(CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return list;
     }
 
     /**
@@ -116,8 +118,11 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     @Override
     public Page<T> findAll(Pageable pageable) {
-        List<T> data = getMapper().selectPageByExample(null, pageable);
-        return new PageImpl<T>(data, pageable);
+        List<T> list = getMapper().selectPageByExample(null, pageable);
+        if(CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return new PageImpl<T>(list, pageable);
     }
 
     /**
@@ -130,6 +135,9 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
     public List<T> findAllByIds(List<ID> ids) {
         Stream<ID> stream = StreamSupport.stream(ids.spliterator(), false);
         List<T> list = stream.map(id -> getMapper().selectByPrimaryKey(id)).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
         return list;
     }
 
@@ -237,7 +245,11 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     @Override
     public List<T> findAll(Example example) {
-        return getMapper().selectByExample(example);
+        List<T> list = getMapper().selectByExample(example);
+        if(CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return list;
     }
 
     /**
@@ -249,8 +261,11 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     @Override
     public Page<T> findAll(Example example, Pageable pageable) {
-        List<T> data = getMapper().selectPageByExample(example, pageable);
-        return new PageImpl<T>(data, pageable);
+        List<T> list = getMapper().selectPageByExample(example, pageable);
+        if(CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return new PageImpl<T>(list, pageable);
     }
 
     /**
@@ -276,7 +291,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
             if (list.size() == 1) {
                 return Optional.ofNullable(list.get(0));
             } else if (list.size() > 1) {
-                logger.error("has duplicate items result more than one: {}", list.size());
+                logger.warn("has duplicate items result more than one: {}", list.size());
                 return Optional.ofNullable(list.get(0));
             }
         }

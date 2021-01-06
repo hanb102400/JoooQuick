@@ -45,7 +45,7 @@ public class QueryHelper {
                 continue;
             }
             String columnName = BeanReflections.getColumnName(queryField);
-            Object value = BeanReflections.invokeGetMethod(queryField, query);
+            Object value = BeanReflections.invokeGetMethod(queryField.getName(), query);
             if (!custom) {
                 if (value != null) {
                     criteria.andEqualTo(columnName, value);

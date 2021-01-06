@@ -1,6 +1,9 @@
 package com.shawn.rbac.controller;
 
 
+import com.shawn.jooo.framework.tree.Tree;
+import com.shawn.jooo.framework.tree.TreeHelper;
+import com.shawn.jooo.framework.tree.TreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
@@ -12,6 +15,8 @@ import com.shawn.jooo.framework.response.Responses;
 import com.shawn.jooo.framework.base.BaseController;
 import com.shawn.rbac.entity.SysDepart;
 import com.shawn.rbac.service.SysDepartService;
+
+import java.util.List;
 
 
 /**
@@ -37,7 +42,22 @@ public class SysDepartController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer departId) {
         SysDepart sysDepart = sysDepartService.findOneById(departId).get();
-        return Responses.getSuccessResponse(sysDepart);
+        return Responses.success(sysDepart);
+    }
+
+
+    /**
+     * ajax分页查询，分页参数pageNo,pageSize
+     *
+     * @param sysDepart
+     * @return
+     */
+    @RequestMapping( "/tree")
+    @ResponseBody
+    public Response tree(SysDepart sysDepart) {
+        List<SysDepart> list = sysDepartService.findAll(QueryHelper.getExample(sysDepart));
+        Tree<SysDepart> tree = TreeHelper.listToTree(list,"departId","parentId");
+        return Responses.success(tree);
     }
 
     /**
@@ -50,7 +70,7 @@ public class SysDepartController extends BaseController {
     @ResponseBody
     public Response list(SysDepart sysDepart) {
         Page page = sysDepartService.findAll(QueryHelper.getExample(sysDepart),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +81,22 @@ public class SysDepartController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysDepart sysDepart) {
+    public Response add(@RequestBody SysDepart sysDepart) {
         sysDepartService.save(sysDepart);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param departId
      * @param sysDepart
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer departId, SysDepart sysDepart) {
+    public Response edit(@RequestBody SysDepart sysDepart) {
         sysDepartService.update(sysDepart);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +109,7 @@ public class SysDepartController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer departId) {
         sysDepartService.deleteById(departId);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

@@ -1,13 +1,9 @@
 package com.shawn.rbac.controller;
 
 
-import com.shawn.jooo.framework.mybatis.condition.Example;
-import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
-import com.shawn.jooo.framework.page.Pageable;
-import com.shawn.rbac.entity.SysRole;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
 import com.shawn.jooo.framework.page.Page;
 import com.shawn.jooo.framework.page.PageHelper;
 import com.shawn.jooo.framework.response.Response;
@@ -19,6 +15,7 @@ import com.shawn.rbac.service.SysUserService;
 
 
 /**
+ *
  * 用户信息表
  *
  * @author jooo.gen
@@ -39,29 +36,21 @@ public class SysUserController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Long userId) {
-        //查询条件
         SysUser sysUser = sysUserService.findOneById(userId).get();
-        return Responses.getSuccessResponse(sysUser);
+        return Responses.success(sysUser);
     }
 
     /**
      * ajax分页查询，分页参数pageNo,pageSize
      *
-     * @param query
+     * @param sysUser
      * @return
      */
-    @RequestMapping("/list")
+    @RequestMapping( "/list")
     @ResponseBody
-    public Response list(@RequestBody(required = false) SysUser query) {
-
-        //查询条件
-        Example example = QueryHelper.getExample(query);
-        example.<SysUser>and().andNotEqualTo(SysUser::getStatus, -1);
-        //分页条件
-        Pageable pageable = PageHelper.getPage();
-        //查询
-        Page<SysUser> page = sysUserService.findAll(example, pageable);
-        return Responses.getSuccessResponse(page);
+    public Response list(SysUser sysUser) {
+        Page page = sysUserService.findAll(QueryHelper.getExample(sysUser),  PageHelper.getPage());
+        return Responses.success(page);
     }
 
     /**
@@ -73,9 +62,8 @@ public class SysUserController extends BaseController {
     @RequestMapping("/add")
     @ResponseBody
     public Response add(@RequestBody SysUser sysUser) {
-        sysUser.setCreateTime(System.currentTimeMillis());
         sysUserService.save(sysUser);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -88,23 +76,23 @@ public class SysUserController extends BaseController {
     @ResponseBody
     public Response edit(@RequestBody SysUser sysUser) {
         sysUserService.update(sysUser);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 删除
      *
-     * @param sysUser
+     * @param userId
      * @return
      */
     @RequestMapping(value = "/remove")
     @ResponseBody
-    public Response remove(@RequestBody SysUser sysUser) {
-        sysUserService.deleteById(sysUser.getUserId());
-        return Responses.getDefaultSuccessResponse();
+    public Response remove(@RequestParam Long userId) {
+        sysUserService.deleteById(userId);
+        return Responses.success();
     }
 
-}
+ }
 
 
 

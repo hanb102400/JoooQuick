@@ -38,7 +38,7 @@ public class ${className}Controller extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam <@keyTypeAndField/>) {
         ${className} ${className?uncap_first} = ${className?uncap_first}Service.findOneById(<@keyField/>).get();
-        return Responses.getSuccessResponse(${className?uncap_first});
+        return Responses.success(${className?uncap_first});
     }
 
     /**
@@ -51,7 +51,7 @@ public class ${className}Controller extends BaseController {
     @ResponseBody
     public Response list(${className} ${className?uncap_first}) {
         Page page = ${className?uncap_first}Service.findAll(QueryHelper.getExample(${className?uncap_first}),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -62,23 +62,22 @@ public class ${className}Controller extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(${className} ${className?uncap_first}) {
+    public Response add(@RequestBody ${className} ${className?uncap_first}) {
         ${className?uncap_first}Service.save(${className?uncap_first});
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param <@keyField/>
      * @param ${className?uncap_first}
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam <@keyTypeAndField/>, ${className} ${className?uncap_first}) {
+    public Response edit(@RequestBody ${className} ${className?uncap_first}) {
         ${className?uncap_first}Service.update(${className?uncap_first});
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -91,7 +90,7 @@ public class ${className}Controller extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam <@keyTypeAndField/>) {
         ${className?uncap_first}Service.deleteById(<@keyField/>);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

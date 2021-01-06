@@ -37,7 +37,7 @@ public class SysDictDataController extends BaseController {
     @ResponseBody
     public Response detail(@RequestParam Integer dictCode) {
         SysDictData sysDictData = sysDictDataService.findOneById(dictCode).get();
-        return Responses.getSuccessResponse(sysDictData);
+        return Responses.success(sysDictData);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SysDictDataController extends BaseController {
     @ResponseBody
     public Response list(SysDictData sysDictData) {
         Page page = sysDictDataService.findAll(QueryHelper.getExample(sysDictData),  PageHelper.getPage());
-        return Responses.getSuccessResponse(page);
+        return Responses.success(page);
     }
 
     /**
@@ -61,23 +61,22 @@ public class SysDictDataController extends BaseController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public Response add(SysDictData sysDictData) {
+    public Response add(@RequestBody SysDictData sysDictData) {
         sysDictDataService.save(sysDictData);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
      * 编辑
      *
-     * @param dictCode
      * @param sysDictData
      * @return
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Response edit(@RequestParam Integer dictCode, SysDictData sysDictData) {
+    public Response edit(@RequestBody SysDictData sysDictData) {
         sysDictDataService.update(sysDictData);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
     /**
@@ -90,7 +89,7 @@ public class SysDictDataController extends BaseController {
     @ResponseBody
     public Response remove(@RequestParam Integer dictCode) {
         sysDictDataService.deleteById(dictCode);
-        return Responses.getDefaultSuccessResponse();
+        return Responses.success();
     }
 
  }

@@ -16,7 +16,7 @@ public class Response<T> implements Serializable {
 
     public static final int FAILURE_CODE = 1000;
 
-    public static final int ERROR_CODE = 9999;
+    public static final int ERROR_CODE = 999;
 
     public static final String SUCCESS_MSG = "success";
 

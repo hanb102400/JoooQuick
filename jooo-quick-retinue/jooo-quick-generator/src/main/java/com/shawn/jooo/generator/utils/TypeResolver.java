@@ -1,7 +1,7 @@
 package com.shawn.jooo.generator.utils;
 
 
-import com.shawn.jooo.generator.types.Convert;
+import com.shawn.jooo.generator.xstream.Convert;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.InputStream;

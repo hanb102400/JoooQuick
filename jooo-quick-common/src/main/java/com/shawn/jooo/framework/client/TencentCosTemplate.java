@@ -9,7 +9,9 @@ import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
-import com.shawn.jooo.framework.request.Requests;
+import com.shawn.jooo.framework.core.request.Requests;
+import com.shawn.jooo.framework.core.validate.Preconditions;
+import com.shawn.jooo.framework.core.validate.Validations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,10 +53,10 @@ public class TencentCosTemplate {
     @PostConstruct
     public void init() {
         System.out.println("初始化ossClient方法");
-        Requests.checkNotEmpty(secretId, new RuntimeException("secretId is empty"));
-        Requests.checkNotEmpty(secretKey, new RuntimeException("secretKey is empty"));
-        Requests.checkNotEmpty(region, new RuntimeException("region is empty"));
-        Requests.checkNotEmpty(bucketName, new RuntimeException("bucketName is empty"));
+        Validations.checkNotEmpty(secretId, new RuntimeException("secretId is empty"));
+        Validations.checkNotEmpty(secretKey, new RuntimeException("secretKey is empty"));
+        Validations.checkNotEmpty(region, new RuntimeException("region is empty"));
+        Validations.checkNotEmpty(bucketName, new RuntimeException("bucketName is empty"));
         this.cosClient = creatClient();
     }
 
@@ -80,8 +82,10 @@ public class TencentCosTemplate {
             bucketResult = cosClient.createBucket(createBucketRequest);
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
+            logger.error("oss error",serverException);
         } catch (CosClientException clientException) {
             clientException.printStackTrace();
+            logger.error("oss error",clientException);
         }
         return bucketResult;
     }

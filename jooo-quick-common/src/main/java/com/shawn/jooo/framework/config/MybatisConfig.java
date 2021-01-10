@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -38,7 +38,7 @@ public class MybatisConfig implements TransactionManagementConfigurer {
     @Value("${mybatis.showSql:false}")
     private String showSql;
 
-    @Resource
+    @javax.annotation.Resource
     private DataSource dataSource;
 
     @Override
@@ -48,7 +48,7 @@ public class MybatisConfig implements TransactionManagementConfigurer {
 
 
     /**
-     *  mybatis结果集映射插件
+     * mybatis结果集映射插件
      *
      * @return
      */
@@ -66,11 +66,11 @@ public class MybatisConfig implements TransactionManagementConfigurer {
     @Bean
     MybatisPaginationPlugin mybatisPaginationPlugin() {
         //Mybatis分页插件
-        MybatisPaginationPlugin mybatisPaginationPlugin = new MybatisPaginationPlugin();
+        MybatisPaginationPlugin mybatisStatementPlugin = new MybatisPaginationPlugin();
         Properties prop = new Properties();
         prop.setProperty("dialect", "mysql");
-        mybatisPaginationPlugin.setProperties(prop);
-        return mybatisPaginationPlugin;
+        mybatisStatementPlugin.setProperties(prop);
+        return mybatisStatementPlugin;
     }
 
     /**
@@ -82,11 +82,12 @@ public class MybatisConfig implements TransactionManagementConfigurer {
     MybatisSqlLogPlugin mybatisSqlLogPlugin() {
         //日志插件
         MybatisSqlLogPlugin mybatisSqlLogPlugin = new MybatisSqlLogPlugin();
-        Properties prop2 = new Properties();
-        prop2.setProperty("show_sql", showSql);
-        mybatisSqlLogPlugin.setProperties(prop2);
+        Properties prop = new Properties();
+        prop.setProperty("show_sql", showSql);
+        mybatisSqlLogPlugin.setProperties(prop);
         return mybatisSqlLogPlugin;
     }
+
 
     @Bean(name = "sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
@@ -95,17 +96,18 @@ public class MybatisConfig implements TransactionManagementConfigurer {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setTypeAliasesPackage(typeAliasesPackage);
+        //配置xml路径
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        bean.setMapperLocations(resolver.getResources(mapperLocations));
+        //配置插件
         bean.setPlugins(new Interceptor[]{
                 mybatisResultMapPlugin(),
                 mybatisPaginationPlugin(),
                 mybatisSqlLogPlugin()
         });
-
-        //添加XML目录
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        bean.setMapperLocations(resolver.getResources(mapperLocations));
         return bean.getObject();
     }
+
 
     @Bean
     public DataSourceTransactionManager transactionManager() {

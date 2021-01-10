@@ -2,8 +2,8 @@ package com.shawn.jooo.framework.base;
 
 
 import com.shawn.jooo.framework.mybatis.condition.Example;
-import com.shawn.jooo.framework.page.Page;
-import com.shawn.jooo.framework.page.Pageable;
+import com.shawn.jooo.framework.core.page.Page;
+import com.shawn.jooo.framework.core.page.Pageable;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,33 +16,46 @@ import java.util.Optional;
  */
 public interface BaseService<T, ID extends Serializable> {
 
-    int count();
+    /**
+     * count & exists
+     */
+    long count(Example example);
 
-    boolean existsById(ID id);
+    long count();
+
+    boolean exists(Example example);
+
+    boolean exists(ID id);
 
     /**
      * find
      */
+    Optional<T> findOne(ID id);
+
+    Optional<T> findOne(Example example);
+
     List<T> findAll();
+
+    List<T> findAll(Example example);
+
+    List<T> findAll(List<ID> ids);
 
     Page<T> findAll(Pageable pageable);
 
-    List<T> findAllByIds(List<ID> ids);
-
-    Optional<T> findOneById(ID id);
+    Page<T> findAll(Example example, Pageable pageable);
 
     /**
      * save or update
      */
-    void save(T entity);
+    int save(T entity);
 
-    void update(T entity);
+    int update(T entity);
 
-    void update(T entity, Example example);
+    int update(T entity, Example example);
 
-    void saveOrUpdate(T entity);
+    int saveOrUpdate(T entity);
 
-    void saveAllInBatch(List<T> entities);
+    void saveAllBatch(List<T> entities);
 
     /**
      * delete
@@ -51,20 +64,19 @@ public interface BaseService<T, ID extends Serializable> {
 
     void deleteAll(List<ID> ids);
 
-    void deleteById(ID id);
-
-    /**
-     * Example
-     */
-    long count(Example example);
-
-    boolean exists(Example example);
-
     void delete(Example example);
 
-    List<T> findAll(Example example);
+    void delete(ID id);
 
-    Page<T> findAll(Example example, Pageable pageable);
+    /**
+     * logic delete
+     */
+    void logicDeleteAll();
 
-    Optional<T> findOne(Example example);
+    void logicDeleteAll(List<ID> ids);
+
+    void logicDelete(ID id);
+
+    void logicDelete(Example example);
+
 }

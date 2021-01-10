@@ -1,7 +1,7 @@
 package com.shawn.jooo.framework.mybatis.annotation;
 
 
-import com.shawn.jooo.framework.mybatis.condition.Match;
+import com.shawn.jooo.framework.mybatis.condition.LikeMatch;
 import com.shawn.jooo.framework.mybatis.condition.Criteria;
 import org.springframework.web.bind.annotation.Mapping;
 
@@ -15,5 +15,5 @@ public @interface QueryField {
 
     Criteria value() default Criteria.EQ;
 
-    Match match() default Match.ANY;
+    LikeMatch match() default LikeMatch.ANY;
 }

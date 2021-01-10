@@ -38,17 +38,16 @@ public class MybatisSqlLogPlugin implements Interceptor {
 
     private boolean showSql = false;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisSqlLogPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(MybatisSqlLogPlugin.class);
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
 
         Object target = invocation.getTarget();
-        String method = invocation.getMethod().getName();
-
         if (!showSql || target == null) {
             return invocation.proceed();
         } else if (target instanceof Executor) {
+            //打印SQL语句和参数
             MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
             Object parameter = null;
             Object returnValue;
@@ -59,22 +58,23 @@ public class MybatisSqlLogPlugin implements Interceptor {
             BoundSql boundSql = mappedStatement.getBoundSql(parameter);
             Configuration configuration = mappedStatement.getConfiguration();
             String sql = getSql(configuration, boundSql, sqlId);
-            LOGGER.debug("<==             Sql: " + sql);
+            logger.debug("<==             Sql: " + sql);
             long start = System.currentTimeMillis();
             try {
                 returnValue = invocation.proceed();
             } catch (Exception e) {
                 sql = getSql(configuration, boundSql, sqlId);
-                LOGGER.error("[log]执行SQL异常：{}", sql);
-                LOGGER.error("[log]异常", e);
+                logger.error("[log]执行SQL异常：{}", sql);
+                logger.error("[log]异常", e);
                 throw e;
             }
             long end = System.currentTimeMillis();
             long time = (end - start);
-            LOGGER.debug("<==   Sql Cost Time: " + time);
+            logger.debug("<==   Sql Cost Time: " + time);
 
             return returnValue;
         } else if (target instanceof ResultSetHandler) {
+            //打印SQL结果
             Statement stmt = (Statement) invocation.getArgs()[0];
             List<Object> returnValue = (List<Object>) invocation.proceed();
             handleResult(returnValue);
@@ -84,10 +84,10 @@ public class MybatisSqlLogPlugin implements Interceptor {
     }
 
     public static void handleResult(List<Object> returnValue) {
-        LOGGER.debug("<==           Total: " + returnValue.size());
+        logger.debug("<==           Total: " + returnValue.size());
         for (Object bean : returnValue) {
             String beanStr = ToStringBuilder.reflectionToString(bean, ToStringStyle.DEFAULT_STYLE);
-            LOGGER.debug("<==             Row: " + beanStr);
+            logger.debug("<==             Row: " + beanStr);
         }
     }
 
@@ -149,14 +149,8 @@ public class MybatisSqlLogPlugin implements Interceptor {
     }
 
     @Override
-    public Object plugin(Object target) {
-        return Plugin.wrap(target, this);
-
-    }
-
-    @Override
     public void setProperties(Properties properties) {
-        String debugStr = properties.getProperty("show_log");
+        String debugStr = properties.getProperty("show_sql");
         this.showSql = "true".equalsIgnoreCase(debugStr);
     }
 

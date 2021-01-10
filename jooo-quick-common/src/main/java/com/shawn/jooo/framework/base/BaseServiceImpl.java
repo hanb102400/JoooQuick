@@ -1,11 +1,12 @@
 package com.shawn.jooo.framework.base;
 
 
+import com.shawn.jooo.framework.mybatis.annotation.LogicDelete;
 import com.shawn.jooo.framework.mybatis.condition.Example;
 import com.shawn.jooo.framework.mybatis.reflect.ClassTypeAdapt;
-import com.shawn.jooo.framework.page.Page;
-import com.shawn.jooo.framework.page.PageImpl;
-import com.shawn.jooo.framework.page.Pageable;
+import com.shawn.jooo.framework.core.page.Page;
+import com.shawn.jooo.framework.core.page.PageImpl;
+import com.shawn.jooo.framework.core.page.Pageable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -81,139 +82,9 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * 查询结果数量
      */
     @Override
-    public int count() {
+    public long count() {
         return this.getMapper().countByExample(null);
     }
-
-    /**
-     * 根据id判断是否存在
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public boolean existsById(ID id) {
-        return getMapper().selectByPrimaryKey(id) != null;
-    }
-
-    /**
-     * 查询所有
-     *
-     * @return
-     */
-    @Override
-    public List<T> findAll() {
-        List<T> list =  getMapper().selectByExample(null);
-        if(CollectionUtils.isEmpty(list)) {
-            list = Collections.emptyList();
-        }
-        return list;
-    }
-
-    /**
-     * 查询所有，分页
-     *
-     * @param pageable
-     * @return
-     */
-    @Override
-    public Page<T> findAll(Pageable pageable) {
-        List<T> list = getMapper().selectPageByExample(null, pageable);
-        if(CollectionUtils.isEmpty(list)) {
-            list = Collections.emptyList();
-        }
-        return new PageImpl<T>(list, pageable);
-    }
-
-    /**
-     * 根据id列表查询
-     *
-     * @param ids
-     * @return
-     */
-    @Override
-    public List<T> findAllByIds(List<ID> ids) {
-        Stream<ID> stream = StreamSupport.stream(ids.spliterator(), false);
-        List<T> list = stream.map(id -> getMapper().selectByPrimaryKey(id)).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(list)) {
-            list = Collections.emptyList();
-        }
-        return list;
-    }
-
-    /**
-     * 根据id查询
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public Optional<T> findOneById(ID id) {
-        T data = getMapper().selectByPrimaryKey(id);
-        return Optional.ofNullable(data);
-    }
-
-    /**
-     * 插入一条记录
-     *
-     * @param entity
-     */
-    @Override
-    public void save(T entity) {
-        getMapper().insert(entity);
-    }
-
-    /**
-     * 更新一条记录
-     *
-     * @param entity
-     */
-    @Override
-    public void update(T entity) {
-        getMapper().updateByPrimaryKeySelective(entity);
-    }
-
-    /**
-     * 根据查询条件，更新一条记录
-     *
-     * @param entity
-     * @param example
-     */
-    @Override
-    public void update(T entity, Example example) {
-        getMapper().updateByExampleSelective(entity, example);
-    }
-
-    /**
-     * 存在则更新记录，不存在则保存记录
-     *
-     * @param entity
-     */
-    @Override
-    public void saveOrUpdate(T entity) {
-        ID id = getPrimaryKey(entity);
-        Assert.notNull(id, "get id column is null of " + entity.getClass().getName());
-        if (id != null) {
-            T result = getMapper().selectByPrimaryKey(id);
-            if (result != null) {
-                update(entity);
-            } else {
-                save(entity);
-            }
-        }
-    }
-
-
-    /**
-     * 根据ID删除
-     *
-     * @param id
-     */
-    @Override
-    public void deleteById(ID id) {
-        getMapper().deleteByPrimaryKey(id);
-    }
-
 
     /**
      * 根据条件，返回数据数量
@@ -227,6 +98,17 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
     }
 
     /**
+     * 根据id判断是否存在
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean exists(ID id) {
+        return getMapper().selectByPrimaryKey(id) != null;
+    }
+
+    /**
      * 根据条件，判断是否存在
      *
      * @param example
@@ -237,45 +119,17 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
         return getMapper().countByExample(example) > 0;
     }
 
+
     /**
-     * 根据条件，查询记录
+     * 根据id查询
      *
-     * @param example
+     * @param id
      * @return
      */
     @Override
-    public List<T> findAll(Example example) {
-        List<T> list = getMapper().selectByExample(example);
-        if(CollectionUtils.isEmpty(list)) {
-            list = Collections.emptyList();
-        }
-        return list;
-    }
-
-    /**
-     * 根据条件，查询记录，并分页
-     *
-     * @param example
-     * @param pageable
-     * @return
-     */
-    @Override
-    public Page<T> findAll(Example example, Pageable pageable) {
-        List<T> list = getMapper().selectPageByExample(example, pageable);
-        if(CollectionUtils.isEmpty(list)) {
-            list = Collections.emptyList();
-        }
-        return new PageImpl<T>(list, pageable);
-    }
-
-    /**
-     * 根据条件，删除一条记录
-     *
-     * @param example
-     */
-    @Override
-    public void delete(Example example) {
-        getMapper().deleteByExample(example);
+    public Optional<T> findOne(ID id) {
+        T data = getMapper().selectByPrimaryKey(id);
+        return Optional.ofNullable(data);
     }
 
     /**
@@ -298,16 +152,185 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
         return Optional.empty();
     }
 
+
     /**
-     * 批量保存
+     * 查询所有
+     *
+     * @return
+     */
+    @Override
+    public List<T> findAll() {
+        List<T> list = getMapper().selectByExample(null);
+        if (CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return list;
+    }
+
+    /**
+     * 查询所有，分页
+     *
+     * @param pageable
+     * @return
+     */
+    @Override
+    public Page<T> findAll(Pageable pageable) {
+        List<T> list = getMapper().selectPageByExample(null, pageable);
+        if (CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return new PageImpl(list, pageable);
+    }
+
+    /**
+     * 根据id列表查询
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<T> findAll(List<ID> ids) {
+        Stream<ID> stream = StreamSupport.stream(ids.spliterator(), false);
+        List<T> list = stream.map(id -> getMapper().selectByPrimaryKey(id)).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return list;
+    }
+
+
+    /**
+     * 根据条件，查询记录
+     *
+     * @param example
+     * @return
+     */
+    @Override
+    public List<T> findAll(Example example) {
+        List<T> list = getMapper().selectByExample(example);
+        if (CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return list;
+    }
+
+    /**
+     * 根据条件，查询记录，并分页
+     *
+     * @param example
+     * @param pageable
+     * @return
+     */
+    @Override
+    public Page<T> findAll(Example example, Pageable pageable) {
+        List<T> list = getMapper().selectPageByExample(example, pageable);
+        if (CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return new PageImpl<T>(list, pageable);
+    }
+
+    /**
+     * 插入一条记录
+     *
+     * @param entity
+     */
+    @Override
+    public int save(T entity) {
+        return getMapper().insert(entity);
+    }
+
+    /**
+     * 更新一条记录
+     *
+     * @param entity
+     */
+    @Override
+    public int update(T entity) {
+        return getMapper().updateByPrimaryKeySelective(entity);
+    }
+
+    /**
+     * 根据查询条件，更新一条记录
+     *
+     * @param entity
+     * @param example
+     */
+    @Override
+    public int update(T entity, Example example) {
+        return getMapper().updateByExampleSelective(entity, example);
+    }
+
+    /**
+     * 存在则更新记录，不存在则保存记录
+     *
+     * @param entity
+     */
+    @Override
+    @Transactional
+    public int saveOrUpdate(T entity) {
+        ID id = getPrimaryKey(entity);
+        Assert.notNull(id, "get id column is null of " + entity.getClass().getName());
+        if (id != null) {
+            T result = getMapper().selectByPrimaryKey(id);
+            if (result != null) {
+                return update(entity);
+            } else {
+                return save(entity);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 批量插入
      *
      * @param entities
      */
     @Override
-    public void saveAllInBatch(List<T> entities) {
-        getMapper().insertBatch(entities);
+    public void saveAllBatch(List<T> entities) {
+        final int batch = 5000;
+        if (!CollectionUtils.isEmpty(entities)) {
+            while (entities.size() > batch) {
+                List inserts = entities.subList(0, batch);
+                entities = entities.subList(batch, entities.size());
+                getMapper().insertBatch(inserts);
+            }
+            if (entities.size() > 0) {
+                getMapper().insertBatch(entities);
+            }
+        }
     }
 
+
+    /**
+     * 根据ID删除
+     *
+     * @param id
+     */
+    @Override
+    public void delete(ID id) {
+        getMapper().deleteByPrimaryKey(id);
+    }
+
+
+    /**
+     * 根据条件，删除一条记录
+     *
+     * @param example
+     */
+    @Override
+    public void delete(Example example) {
+        getMapper().deleteByExample(example);
+    }
+
+    /**
+     * 删除所有
+     */
+    @Override
+    public void deleteAll() {
+        getMapper().deleteByExample(null);
+    }
 
     /**
      * 删除列表数据
@@ -320,14 +343,80 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
         ids.forEach(id -> getMapper().deleteByPrimaryKey(id));
     }
 
+
+    /**
+     * 逻辑删除
+     */
+    @Override
+    @Transactional
+    public void logicDelete(ID id) {
+        T data = getMapper().selectByPrimaryKey(id);
+        data = setLogicDelete(data);
+        this.update(data);
+    }
+
+    @Override
+    @Transactional
+    public void logicDelete(Example example) {
+        List<T> list = getMapper().selectByExample(example);
+        if (!CollectionUtils.isEmpty(list)) {
+            list.stream().forEach(data -> {
+                data = setLogicDelete(data);
+                this.update(data);
+            });
+        }
+    }
+
+    /**
+     * 删除列表数据
+     *
+     * @param ids
+     */
+    @Override
+    @Transactional
+    public void logicDeleteAll(List<ID> ids) {
+        List<T> list = ids.stream().map(id -> getMapper().selectByPrimaryKey(id)).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(list)) {
+            list.stream().forEach(data -> {
+                data = setLogicDelete(data);
+                this.update(data);
+            });
+        }
+    }
+
     /**
      * 删除所有
      */
     @Override
-    @Deprecated
-    public void deleteAll() {
-        getMapper().deleteByExample(null);
+    @Transactional
+    public void logicDeleteAll() {
+        List<T> list = getMapper().selectByExample(null);
+        if (!CollectionUtils.isEmpty(list)) {
+            list.stream().forEach(data -> {
+                data = setLogicDelete(data);
+                this.update(data);
+            });
+        }
     }
+
+
+    private T setLogicDelete(T entity) {
+        Class<T> clazz = getClassType();
+        Field[] fields = clazz.getDeclaredFields();
+        Optional<Field> optional = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(LogicDelete.class)).findFirst();
+        Field field = optional.orElseThrow(() -> new RuntimeException(clazz.getName() + "逻辑删除必须存在@LogicDelete注解字段"));
+        try {
+            LogicDelete logicDelete = field.getAnnotation(LogicDelete.class);
+            int deleteFlag = logicDelete.value();
+            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), getClassType());
+            Method setMethod = pd.getWriteMethod();
+            setMethod.invoke(entity, deleteFlag);
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new RuntimeException("serviceImpl logic delete value error", e);
+        }
+        return entity;
+    }
+
 
     /**
      * getPrimaryKey
@@ -337,17 +426,16 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     private ID getPrimaryKey(T entity) {
         ID idValue = null;
-        Field[] fields = getClassType().getDeclaredFields();
+        Class<T> clazz = getClassType();
+        Field[] fields = clazz.getDeclaredFields();
         Optional<Field> optional = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Id.class)).findFirst();
-        if (optional.isPresent()) {
-            Field field = optional.get();
-            try {
-                PropertyDescriptor pd = new PropertyDescriptor(field.getName(), getClassType());
-                Method getMethod = pd.getReadMethod();
-                idValue = (ID) getMethod.invoke(entity);
-            } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-                throw new RuntimeException("serviceImpl get PrimaryKey value error", e);
-            }
+        Field field = optional.orElseThrow(() -> new RuntimeException(clazz.getName() + "必须存在@Id注解字段"));
+        try {
+            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), getClassType());
+            Method getMethod = pd.getReadMethod();
+            idValue = (ID) getMethod.invoke(entity);
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new RuntimeException("serviceImpl get PrimaryKey value error", e);
         }
         return idValue;
     }

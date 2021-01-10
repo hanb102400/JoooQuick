@@ -1,7 +1,7 @@
 package com.shawn.api.config;
 
 import com.shawn.jooo.framework.exception.ApiException;
-import com.shawn.jooo.framework.exception.ErrorCode;
+import com.shawn.jooo.framework.constant.ErrorCode;
 import com.shawn.jooo.framework.utils.SignUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;

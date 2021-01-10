@@ -5603,7 +5603,7 @@
   // this map is intentionally selective, only covering SVG elements that may
   // contain child elements.
   var isSVG = makeMap(
-    'svg,animate,circle,clippath,cursor,defs,desc,ellipse,filter,font-face,' +
+    'svg,animate,circle,clippath,cursor,defs,desc,ellipse,handler,font-face,' +
     'foreignObject,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
     'polygon,polyline,rect,switch,symbol,text,textpath,tspan,use,view',
     true
@@ -6855,7 +6855,7 @@
         !curly && !square && !paren
       ) {
         if (expression === undefined) {
-          // first filter, end of expression
+          // first handler, end of expression
           lastFilterIndex = i + 1;
           expression = exp.slice(0, i).trim();
         } else {
@@ -8499,7 +8499,7 @@
         setSelected(el, binding, vnode.context);
         // in case the options rendered by v-for have changed,
         // it's possible that the value is out-of-sync with the rendered options.
-        // detect such cases and filter out values that no longer has a matching
+        // detect such cases and handler out values that no longer has a matching
         // option in the DOM.
         var prevOptions = el._vOptions;
         var curOptions = el._vOptions = [].map.call(el.options, getValue);
@@ -8740,7 +8740,7 @@
         return
       }
 
-      // filter out text nodes (possible whitespaces)
+      // handler out text nodes (possible whitespaces)
       children = children.filter(isNotTextNode);
       /* istanbul ignore if */
       if (!children.length) {
@@ -9666,7 +9666,7 @@
       }
 
       // final children cleanup
-      // filter out scoped slots
+      // handler out scoped slots
       element.children = element.children.filter(function (c) { return !(c).slotScope; });
       // remove trailing whitespace node again
       trimEndingWhitespace(element);

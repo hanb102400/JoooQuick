@@ -1,6 +1,6 @@
 # server
 server:
-    port: 8003
+    port: 18081
     servlet:
         context-path: /
 
@@ -11,10 +11,26 @@ spring:
         date-format: yyyy-MM-dd HH:mm:ss
     # database
     datasource:
+        # type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
         jdbc-url: jdbc:mysql://127.0.0.1:3306/test?characterEncoding=UTF-8&&serverTimezone=GMT
         username: root
         password: 123456
+        druid:
+              initialSize: 1
+              minIdle: 3
+              maxActive: 20
+              maxWait: 3000
+              timeBetweenEvictionRunsMillis: 3000
+              minEvictableIdleTimeMillis: 3000
+              validationQuery: select 'x'
+              testWhileIdle: true
+              testOnBorrow: false
+              testOnReturn: false
+              poolPreparedStatements: true
+              maxPoolPreparedStatementPerConnectionSize: 20
+              filters: stat,wall,slf4j
+              connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=1000
     redis:
         host: 127.0.0.1
         port: 6379
@@ -26,11 +42,19 @@ spring:
                 min-idle: 0
                 max-wait: -1
 
+cas:
+  enable: true
+  server-url-prefix: http://cas.server.com/cas
+  server-login-url:  http://cas.server.com/cas/login
+  server-logout-url:  http://cas.server.com/cas/logout
+  client-host-url: http://cas.client.com:18081
+
+
 # default
 mybatis:
     mapperLocations: classpath*:default/mapper/**/*.xml
     typeAliasesPackage: com.shawn.**.entity
-    showSql: false
+    showSql: true
 
 # paging
 paging:
@@ -43,10 +67,10 @@ logging:
         name: jooo_api.log
     level:
         root: info
-        com.shawn: DEBUG
+        com.shawn: debug
 
 app:
-
+    indexUrl: http://cas.client.com:1357/
     sign:
       check: true
       secret: 1357911

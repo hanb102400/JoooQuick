@@ -107,17 +107,34 @@ public class BeanReflections {
         return invokeGetMethod(field.getName(), obj);
     }
 
+
     public static Object invokeGetMethod(String fieldName, Object obj) {
-        Object value;
+        Object ret;
         try {
             PropertyDescriptor pd = new PropertyDescriptor(fieldName, obj.getClass());
             Method getMethod = pd.getReadMethod();
-            value = getMethod.invoke(obj);
+            ret = getMethod.invoke(obj);
         } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("invokeGetMethod error:" + obj.getClass().getName() + ":" + fieldName);
 
         }
-        return value;
+        return ret;
+    }
+
+    public static void invokeSetMethod(Field field, Object value, Object obj) {
+        invokeSetMethod(field.getName(), value, obj);
+    }
+
+
+    public static void invokeSetMethod(String fieldName, Object value, Object obj) {
+        try {
+            PropertyDescriptor pd = new PropertyDescriptor(fieldName, obj.getClass());
+            Method setMethod = pd.getWriteMethod();
+            setMethod.invoke(obj, value);
+        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("invokeSetMethod error:" + obj.getClass().getName() + ":" + fieldName);
+
+        }
     }
 
     public static Class<?> getFieldType(Field field) {

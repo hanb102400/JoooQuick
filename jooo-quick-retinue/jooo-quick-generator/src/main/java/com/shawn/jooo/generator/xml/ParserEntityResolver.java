@@ -20,7 +20,7 @@ public class ParserEntityResolver implements EntityResolver {
         InputStream is;
         InputSource ins;
         if ("-//rats.org//DTD Lu Generator Configuration 1.0//EN".equalsIgnoreCase(publicId)) {
-            is = this.getClass().getClassLoader().getResourceAsStream("lu-generator-config_1_0.dtd");
+            is = this.getClass().getClassLoader().getResourceAsStream("generator_1_0.dtd");
             ins = new InputSource(is);
             return ins;
         } else {

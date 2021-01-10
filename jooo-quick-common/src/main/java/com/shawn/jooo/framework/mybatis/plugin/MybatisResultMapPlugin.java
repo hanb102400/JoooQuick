@@ -2,11 +2,16 @@ package com.shawn.jooo.framework.mybatis.plugin;
 
 import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.JdbcType;
@@ -16,6 +21,7 @@ import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.Transient;
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.util.*;
 
 
@@ -25,26 +31,25 @@ import java.util.*;
  * @author shawn
  */
 @Intercepts({
-        @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})
+        @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+        @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
 })
 public class MybatisResultMapPlugin implements Interceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisResultMapPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(MybatisResultMapPlugin.class);
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
 
-        if (!(invocation.getTarget() instanceof Executor)) {
-            return invocation.proceed();
-        }
-        MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
+        Object[] args = invocation.getArgs();
+        MappedStatement mappedStatement = (MappedStatement) args[0];
         //xml sql 不做处理
-        if (ms.getResource().contains(".xml")) {
+        if (mappedStatement.getResource().contains(".xml")) {
             return invocation.proceed();
         }
 
         //已添加映射，不做处理
-        ResultMap resultMap = ms.getResultMaps().iterator().next();
+        ResultMap resultMap = mappedStatement.getResultMaps().iterator().next();
         if (resultMap.getResultMappings() != null && resultMap.getResultMappings().size() > 0) {
             return invocation.proceed();
         }
@@ -65,7 +70,7 @@ public class MybatisResultMapPlugin implements Interceptor {
                     String fieldName = BeanReflections.getFiledName(field);
                     Class<?> filedType = BeanReflections.getFieldType(field);
                     JdbcType jdbcType = BeanReflections.getJdbcType(field);
-                    ResultMapping resultMapping = new ResultMapping.Builder(ms.getConfiguration(), fieldName)
+                    ResultMapping resultMapping = new ResultMapping.Builder(mappedStatement.getConfiguration(), fieldName)
                             .column(columnName).javaType(filedType).jdbcType(jdbcType).build();
                     resultMappings.add(resultMapping);
                 }
@@ -73,16 +78,11 @@ public class MybatisResultMapPlugin implements Interceptor {
             entityType = entityType.getSuperclass();
         }
 
-        ResultMap newResultMap = new ResultMap.Builder(ms.getConfiguration(), resultMap.getId(), resultMap.getType(), resultMappings).build();
+        ResultMap newResultMap = new ResultMap.Builder(mappedStatement.getConfiguration(), resultMap.getId(), resultMap.getType(), resultMappings).build();
         Field field = ReflectionUtils.findField(MappedStatement.class, "resultMaps");
         ReflectionUtils.makeAccessible(field);
-        ReflectionUtils.setField(field, ms, Collections.singletonList(newResultMap));
+        ReflectionUtils.setField(field, mappedStatement, Collections.singletonList(newResultMap));
         return invocation.proceed();
-    }
-
-    @Override
-    public Object plugin(Object target) {
-        return Plugin.wrap(target, this);
     }
 
     @Override

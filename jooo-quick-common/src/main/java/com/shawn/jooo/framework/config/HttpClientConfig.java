@@ -51,7 +51,7 @@ import java.util.*;
 @ConditionalOnClass(value = {RestTemplate.class})
 public class HttpClientConfig {
 
-    private Logger log = LoggerFactory.getLogger(HttpClientConfig.class);
+    private Logger logger = LoggerFactory.getLogger(HttpClientConfig.class);
     /**
      * 连接池的最大连接数
      */
@@ -164,7 +164,7 @@ public class HttpClientConfig {
             httpClientBuilder.setKeepAliveStrategy(connectionKeepAliveStrategy());
             return httpClientBuilder.build();
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-            log.error("初始化HTTP连接池出错", e);
+            logger.error("初始化HTTP连接池出错", e);
         }
         return null;
     }
@@ -182,14 +182,13 @@ public class HttpClientConfig {
                     response.headerIterator(HTTP.CONN_KEEP_ALIVE));
             while (it.hasNext()) {
                 HeaderElement he = it.nextElement();
-                log.info("HeaderElement:{}", he);
                 String param = he.getName();
                 String value = he.getValue();
                 if (value != null && "timeout".equalsIgnoreCase(param)) {
                     try {
                         return Long.parseLong(value) * 1000;
                     } catch (NumberFormatException ignore) {
-                        log.error("解析长连接过期时间异常", ignore);
+                        logger.error("解析长连接过期时间异常", ignore);
                     }
                 }
             }

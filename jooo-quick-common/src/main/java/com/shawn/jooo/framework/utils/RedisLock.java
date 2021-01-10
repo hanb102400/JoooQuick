@@ -1,6 +1,9 @@
 package com.shawn.jooo.framework.utils;
 
 
+import com.shawn.jooo.framework.config.HttpClientConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisCallback;
@@ -16,6 +19,8 @@ import java.util.concurrent.TimeUnit;
  * @author shawn
  */
 public class RedisLock {
+
+    private static Logger logger = LoggerFactory.getLogger(RedisLock.class);
 
     private static StringRedisTemplate stringRedisTemplate;
 
@@ -90,6 +95,7 @@ public class RedisLock {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
+                logger.error("InterruptedException",e);
                 Thread.currentThread().interrupt();
             }
         } while (System.currentTimeMillis() < start + acquireTimeout);

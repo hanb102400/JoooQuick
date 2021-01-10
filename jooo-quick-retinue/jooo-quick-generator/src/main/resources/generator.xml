@@ -1,38 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration
         PUBLIC "-//rats.org//DTD Lu Generator Configuration 1.0//EN"
-        "http://rats.org/dtd/lu-generator-config_1_0.dtd">
+        "generator_1_0.dtd">
 <configuration>
 
-    <properties resource="jdbc.properties"/>
+    <import resource="jdbc.properties"/>
 
-    <properties>
+    <common>
         <!-- 工程和模板配置 -->
-        <property name="targetProject" value="G:/code/JoooQuick"></property>
-        <property name="templateDir" value="template/default"></property>
-        <property name="override" value="true"></property>
-        <property name="author" value="@jooo.gen"></property>
-        <property name="zip" value="false"></property>
-    </properties>
-
-    <!-- jdbc配置 -->
-    <jdbcConnection driverClassName="${jdbc.driverClassName}"
-                    url="${jdbc.url}"
-                    username="${jdbc.username}"
-                    password="${jdbc.password}">
-    </jdbcConnection>
-
+        <property name="out.dir" value="G:/code/JoooQuick"></property>
+        <property name="out.zip" value="false"></property>
+        <property name="out.override" value="true"></property>
+        <property name="template.dir" value="template/default"></property>
+        <property name="template.author" value="@jooo.gen"></property>
+        <property name="jdbc.driverClassName" value="${jdbc.driverClassName}"></property>
+        <property name="jdbc.url" value="${jdbc.url}"></property>
+        <property name="jdbc.username" value="${jdbc.username}"></property>
+        <property name="jdbc.password" value="${jdbc.password}"></property>
+    </common>
 
     <!-- 模板文件配置，此处按需自己定制编写 -->
     <templates>
-        <template name="entity" packageName="com.shawn.rbac.entity" fileName="${className}.java"/>
-        <template name="mapper" packageName="com.shawn.rbac.dao" fileName="${className}Mapper.java"/>
-        <template name="dao" packageName="com.shawn.rbac.dao" fileName="${className}Dao.java"/>
-        <template name="service" packageName="com.shawn.rbac.service" fileName="${className}Service.java"/>
-        <template name="serviceImpl" packageName="com.shawn.rbac.service.impl" fileName="${className}ServiceImpl.java"/>
-        <template name="controller" packageName="com.shawn.rbac.controller" fileName="${className}Controller.java"/>
+        <template name="entity" packageName="com.shawn.admin.rbac.entity" fileName="${className}.java"/>
+        <template name="mapper" packageName="com.shawn.admin.rbac.dao" fileName="${className}Mapper.java"/>
+        <template name="dao" packageName="com.shawn.admin.rbac.dao" fileName="${className}Dao.java"/>
+        <template name="service" packageName="com.shawn.admin.rbac.service" fileName="${className}Service.java"/>
+        <template name="serviceImpl" packageName="com.shawn.admin.rbac.service.impl" fileName="${className}ServiceImpl.java"/>
+        <template name="controller" packageName="com.shawn.admin.rbac.controller" fileName="${className}Controller.java"/>
         <template name="xmlMapper" packageName="mybatis.mapper" fileName="${className}Mapper.xml" type="xml"/>
     </templates>
+
 
     <!-- 模块配置 -->
     <modules>
@@ -40,12 +37,13 @@
                 sources="src/main/java"
                 resources="src/main/resources"
                 templates="entity,mapper,service,serviceImpl,controller"
+
         />
     </modules>
 
 
     <!-- 配置需要生成代码的表，tableName：表名; className：类名 ,subPackageName: 子包名称
-       <table tableName="tb_user_test" className="UserTest">
+       <table tableName="tb_user_test" className="UserTest" type="table,tree,option">
             <columnOverride column="testName"
                             field="username"
                             javaType="java.lang.Long"
@@ -64,12 +62,14 @@
     -->
     <!--
      <views>
-      <view className="SysDictType" pages="query,detail,add,edit,list,export">
+      <view className="SysDictType" type="table,tree,option" operations="query,add,edit,remove.import,export">
           <form field="id" input="text"  mode="EQ" match="" pages="query,detail,add,edit,list,export"/>
           <form field="atype"  select="text"  mode="EQ" match="" pages="query,detail,add,edit,list,export"/>
       </view>
   </views>
   -->
+
+
     <tables>
         <table tableName="sys_dict_type" className="SysDictType"></table>
         <table tableName="sys_dict_data" className="SysDictData"></table>

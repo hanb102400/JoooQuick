@@ -1,7 +1,7 @@
 package com.shawn.jooo.framework.mybatis.mapper;
 
 import com.shawn.jooo.framework.mybatis.condition.Example;
-import com.shawn.jooo.framework.page.Pageable;
+import com.shawn.jooo.framework.core.page.Pageable;
 import org.apache.ibatis.annotations.*;
 
 import java.io.Serializable;

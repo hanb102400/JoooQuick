@@ -167,9 +167,9 @@ public class JSONUtils {
         try {
             return objectMapper.treeToValue(n, valueType);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+
         }
-        return null;
     }
 
 

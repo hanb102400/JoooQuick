@@ -5,9 +5,9 @@ package com.shawn.jooo.framework.mybatis.dialect;
  */
 public class DialectFactory {
 
-    private static final String MYSQL_DIALECT = "mysql";
+    public static final String MYSQL_DIALECT = "mysql";
 
-    private static final String ORACLE_DIALECT = "oracle";
+    public static final String ORACLE_DIALECT = "oracle";
 
     public static Dialect getDialect(String dialectName) throws Exception {
 

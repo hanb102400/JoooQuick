@@ -1,7 +1,7 @@
 package com.shawn.jooo.framework.base;
 
-        import com.shawn.jooo.framework.response.Response;
-        import com.shawn.jooo.framework.response.Responses;
+        import com.shawn.jooo.framework.core.response.Response;
+        import com.shawn.jooo.framework.core.response.Responses;
 
 /**
  * 基础Controller

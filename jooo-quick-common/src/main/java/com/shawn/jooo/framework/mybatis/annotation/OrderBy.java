@@ -13,5 +13,5 @@ public @interface OrderBy {
 
     Direction direction() default Direction.ASC;
 
-    int site() default 1;
+    int index() default 1;
 }

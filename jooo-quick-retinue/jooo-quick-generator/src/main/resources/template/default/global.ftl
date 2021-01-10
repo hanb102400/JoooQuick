@@ -9,9 +9,9 @@
 <#assign baseController= "com.shawn.jooo.framework.base.BaseController" >
 
 <#assign example= "com.shawn.jooo.framework.mybatis.condition.Example" >
-<#assign page= "com.shawn.jooo.framework.page.Page" >
+<#assign page= "com.shawn.jooo.framework.core.page.Page" >
 <#assign pageImpl= "com.shawn.jooo.framework.pageImpl" >
-<#assign pageable= "com.shawn.jooo.framework.page.Pagable" >
+<#assign pageable= "com.shawn.jooo.framework.core.page.Pagable" >
 
 <#-- 主键类型 -->
 <#macro keyType>

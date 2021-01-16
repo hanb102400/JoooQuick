@@ -1,9 +1,12 @@
 package com.shawn.jooo.framework.mybatis.mapper;
 
+import com.shawn.jooo.framework.mybatis.annotation.LogicDelete;
 import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.ibatis.builder.annotation.ProviderContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -61,21 +64,6 @@ public abstract class MybatisProvider {
         }
     }
 
-    public static class DeleteByPrimaryKeyProvider extends CacheProvider {
-
-        @Override
-        public String dynamicSQL(ProviderContext context) {
-            Class mapperType = context.getMapperType();
-            Class<?> entityType = BeanReflections.getEntityType(mapperType);
-            String[] script = {
-                    "<script>",
-                    "delete from " + TABLE_NAME_SQL(entityType),
-                    "where " + ID_PARAM_SQL(entityType),
-                    "</script>",
-            };
-            return String.join("\n", script);
-        }
-    }
 
     public static class InsertProvider extends CacheProvider {
 
@@ -99,6 +87,7 @@ public abstract class MybatisProvider {
 
         @Override
         public String dynamicSQL(ProviderContext context) {
+
             Class mapperType = context.getMapperType();
             Class<?> entityType = BeanReflections.getEntityType(mapperType);
             String[] script = {
@@ -125,8 +114,24 @@ public abstract class MybatisProvider {
             Class<?> entityType = BeanReflections.getEntityType(mapperType);
             String[] script = {
                     "<script>",
-                    "delete from " + TABLE_NAME_SQL(entityType),
+                    PHYSICAL_OR_LOGIC_DELETE_SQL(entityType),
                     EXAMPLE_WHERE_CLAUSE_SQL(),
+                    "</script>",
+            };
+            return String.join("\n", script);
+        }
+    }
+
+    public static class DeleteByPrimaryKeyProvider extends CacheProvider {
+
+        @Override
+        public String dynamicSQL(ProviderContext context) {
+            Class mapperType = context.getMapperType();
+            Class<?> entityType = BeanReflections.getEntityType(mapperType);
+            String[] script = {
+                    "<script>",
+                    PHYSICAL_OR_LOGIC_DELETE_SQL(entityType),
+                    "where " + ID_PARAM_SQL(entityType),
                     "</script>",
             };
             return String.join("\n", script);
@@ -206,9 +211,9 @@ public abstract class MybatisProvider {
             String[] script = {
                     "<script>",
                     "update " + TABLE_NAME_SQL(entityType),
-                    "<set>" ,
+                    "<set>",
                     UPDATE_COLUMN_PARAM_TEST_SQL(entityType),
-                    "</set>" ,
+                    "</set>",
                     UPDATE_EXAMPLE_WHERE_CLAUSE_SQL(),
                     "</script>",
             };
@@ -245,7 +250,7 @@ public abstract class MybatisProvider {
             String[] script = {
                     "<script>",
                     "update " + TABLE_NAME_SQL(entityType),
-                    "<set>" ,
+                    "<set>",
                     UPDATE_COLUMN_PK_TEST_SQL(entityType),
                     "</set>",
                     "where " + ID_PARAM_SQL(entityType),
@@ -273,7 +278,7 @@ public abstract class MybatisProvider {
         }
     }
 
-    public static class InsertBatchProvider extends CacheProvider {
+    public static class InsertInBatchProvider extends CacheProvider {
 
         @Override
         public String dynamicSQL(ProviderContext context) {
@@ -313,16 +318,12 @@ public abstract class MybatisProvider {
      */
     private static String ID_TYPE_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList();
-        while (Object.class != entityType && entityType != null) {
-            // 获得该类所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段，
-            // getFields：获得某个类的所有的公共（public）的字段，包括父类中的字段
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isId(field)) {
-                    String fieldType = BeanReflections.getFieldTypeName(field);
-                    columns.add(fieldType);
-                }
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isId(field)) {
+                String fieldType = BeanReflections.getFieldTypeName(field);
+                columns.add(fieldType);
             }
-            entityType = entityType.getSuperclass();
         }
         return String.join(",", columns);
 
@@ -336,22 +337,19 @@ public abstract class MybatisProvider {
      */
     private static String ID_PARAM_SQL(Class<?> entityType) {
         List<String> idAssigns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            // 获得该类所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段，
-            // getFields：获得某个类的所有的公共（public）的字段，包括父类中的字段
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isId(field)) {
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isId(field)) {
 
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
-                    if (columnName != null) {
-                        idAssigns.add(columnName + " = " + "#{" + fieldName + ",jdbcType=" + columnType + "}");
-                    }
+                if (columnName != null) {
+                    idAssigns.add(columnName + " = " + "#{" + fieldName + ",jdbcType=" + columnType + "}");
                 }
             }
-            entityType = entityType.getSuperclass();
+
         }
         return String.join(",", idAssigns);
     }
@@ -365,19 +363,14 @@ public abstract class MybatisProvider {
      */
     private static String COLUMN_NAME_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            // 获得该类所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段，
-            // getFields：获得某个类的所有的公共（public）的字段，包括父类中的字段
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isColumn(field)) {
-                    String columnName = BeanReflections.getColumnName(field);
-                    if (columnName != null) {
-                        columns.add(columnName);
-                    }
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                String columnName = BeanReflections.getColumnName(field);
+                if (columnName != null) {
+                    columns.add(columnName);
                 }
-
             }
-            entityType = entityType.getSuperclass();
         }
         return String.join(",", columns);
 
@@ -390,22 +383,18 @@ public abstract class MybatisProvider {
      * @return
      */
     private static String COLUMN_PARAM_SQL(Class<?> entityType) {
-        long start = System.nanoTime();
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isColumn(field)) {
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
-                    if (columnName != null) {
-                        columns.add("#{" + fieldName + ",jdbcType=" + columnType + "}");
-                    }
+                if (columnName != null) {
+                    columns.add("#{" + fieldName + ",jdbcType=" + columnType + "}");
                 }
-
             }
-            entityType = entityType.getSuperclass();
         }
         return String.join(",", columns);
     }
@@ -419,19 +408,17 @@ public abstract class MybatisProvider {
      */
     private static String COLUMN_ITEM_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isColumn(field)) {
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
-                    if (columnName != null) {
-                        columns.add("#{ item." + fieldName + ",jdbcType=" + columnType + "}");
-                    }
+                if (columnName != null) {
+                    columns.add("#{ item." + fieldName + ",jdbcType=" + columnType + "}");
                 }
             }
-            entityType = entityType.getSuperclass();
         }
         return String.join(",", columns);
     }
@@ -445,21 +432,17 @@ public abstract class MybatisProvider {
      */
     private static String COLUMN_NAME_TEST_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            // 获得该类所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段，
-            // getFields：获得某个类的所有的公共（public）的字段，包括父类中的字段
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isColumn(field)) {
-                    String fieldName = BeanReflections.getFiledName(field);
-                    String columnName = BeanReflections.getColumnName(field);
-                    if (columnName != null) {
-                        columns.add("<if test=\"" + fieldName + " != null\">\n" +
-                                "   " + columnName + ",\n" +
-                                "</if>");
-                    }
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                String fieldName = BeanReflections.getFieldName(field);
+                String columnName = BeanReflections.getColumnName(field);
+                if (columnName != null) {
+                    columns.add("<if test=\"" + fieldName + " != null\">\n" +
+                            "   " + columnName + ",\n" +
+                            "</if>");
                 }
             }
-            entityType = entityType.getSuperclass();
         }
         return String.join("\n", columns);
 
@@ -475,23 +458,19 @@ public abstract class MybatisProvider {
      */
     private static String COLUMN_PARAM_TEST_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            // 获得该类所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段，
-            // getFields：获得某个类的所有的公共（public）的字段，包括父类中的字段
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isColumn(field)) {
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
-                    if (columnName != null) {
-                        columns.add("<if test=\"" + fieldName + " != null\">\n" +
-                                "        #{" + fieldName + ",jdbcType=" + columnType + "},\n" +
-                                "</if>");
-                    }
+                if (columnName != null) {
+                    columns.add("<if test=\"" + fieldName + " != null\">\n" +
+                            "        #{" + fieldName + ",jdbcType=" + columnType + "},\n" +
+                            "</if>");
                 }
             }
-            entityType = entityType.getSuperclass();
         }
         return String.join("\n", columns);
     }
@@ -505,24 +484,18 @@ public abstract class MybatisProvider {
      */
     private static String UPDATE_COLUMN_PARAM_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            // 获得该类所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段，
-            // getFields：获得某个类的所有的公共（public）的字段，包括父类中的字段
-            for (Field field : entityType.getDeclaredFields()) {
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
-                if (BeanReflections.isColumn(field)) {
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
-
-                    String record = "record.";
-                    if (columnName != null) {
-                        columns.add(columnName + " = #{ " + record + fieldName + ",jdbcType=" + columnType + "}");
-                    }
+                String record = "record.";
+                if (columnName != null) {
+                    columns.add(columnName + " = #{ " + record + fieldName + ",jdbcType=" + columnType + "}");
                 }
-
             }
-            entityType = entityType.getSuperclass();
         }
         return String.join(",\n", columns);
     }
@@ -537,80 +510,86 @@ public abstract class MybatisProvider {
      */
     private static String UPDATE_COLUMN_PK_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            // 获得该类所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段，
-            // getFields：获得某个类的所有的公共（public）的字段，包括父类中的字段
-            for (Field field : entityType.getDeclaredFields()) {
-
-                if (BeanReflections.isColumn(field)) {
-                    if (BeanReflections.isId(field)) {
-                        continue;
-                    }
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
-
-                    if (columnName != null) {
-                        columns.add(columnName + " = #{ " + fieldName + ",jdbcType=" + columnType + "}");
-                    }
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                if (BeanReflections.isId(field)) {
+                    continue;
                 }
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
+                if (columnName != null) {
+                    columns.add(columnName + " = #{ " + fieldName + ",jdbcType=" + columnType + "}");
+                }
             }
-            entityType = entityType.getSuperclass();
+
+
         }
         return String.join(",\n", columns);
     }
 
 
     private static String UPDATE_COLUMN_PARAM_TEST_SQL(Class<?> entityType) {
-        long start = System.nanoTime();
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isColumn(field)) {
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
 
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
-                    String record = "record.";
-                    if (columnName != null) {
-                        columns.add("<if test=\"" + record + fieldName + " != null\">\n" +
-                                "        " + columnName + "= #{ " + record + fieldName + ",jdbcType=" + columnType + "},\n" +
-                                "</if>");
-                    }
+                String record = "record.";
+                if (columnName != null) {
+                    columns.add("<if test=\"" + record + fieldName + " != null\">\n" +
+                            "        " + columnName + "= #{ " + record + fieldName + ",jdbcType=" + columnType + "},\n" +
+                            "</if>");
                 }
-
             }
-            entityType = entityType.getSuperclass();
+
         }
         return String.join("\n", columns);
     }
 
     private static String UPDATE_COLUMN_PK_TEST_SQL(Class<?> entityType) {
         List<String> columns = new ArrayList<>(32);
-        while (Object.class != entityType && entityType != null) {
-            for (Field field : entityType.getDeclaredFields()) {
-                if (BeanReflections.isColumn(field)) {
-                    if (BeanReflections.isId(field)) {
-                        continue;
-                    }
-                    String columnName = BeanReflections.getColumnName(field);
-                    String columnType = BeanReflections.getColumnTypeName(field);
-                    String fieldName = BeanReflections.getFiledName(field);
-
-                    if (columnName != null) {
-                        columns.add(
-                                "<if test=\"" + fieldName + " != null\">\n" +
-                                "        " + columnName + "= #{ " + fieldName + ",jdbcType=" + columnType + "},\n" +
-                                "</if>");
-                    }
+        List<Field> fields = BeanReflections.getFields(entityType);
+        for (Field field : fields) {
+            if (BeanReflections.isColumn(field)) {
+                if (BeanReflections.isId(field)) {
+                    continue;
                 }
+                String columnName = BeanReflections.getColumnName(field);
+                String columnType = BeanReflections.getColumnTypeName(field);
+                String fieldName = BeanReflections.getFieldName(field);
 
+                if (columnName != null) {
+                    columns.add(
+                            "<if test=\"" + fieldName + " != null\">\n" +
+                                    "        " + columnName + "= #{ " + fieldName + ",jdbcType=" + columnType + "},\n" +
+                                    "</if>");
+                }
             }
-            entityType = entityType.getSuperclass();
+
         }
         return String.join("\n", columns);
+    }
+
+    private static String PHYSICAL_OR_LOGIC_DELETE_SQL(Class<?> entityType) {
+
+        List<Field> logicFieldList = BeanReflections.getFieldsWithAnnotation(entityType, LogicDelete.class);
+        if (logicFieldList.size() > 1) {
+            throw new IllegalArgumentException(entityType.getName() + " logicDelete annotation muast unique");
+        } else if (logicFieldList.size() == 1) {
+            Field logicField = logicFieldList.get(0);
+            LogicDelete logicDelete = logicField.getAnnotation(LogicDelete.class);
+            String columnName = BeanReflections.getColumnName(logicField);
+            int logicDeleteFlag = logicDelete.value();
+            return "update " + TABLE_NAME_SQL(entityType) + " set " + columnName + " = " + logicDeleteFlag;
+        }
+        return "delete from " + TABLE_NAME_SQL(entityType);
     }
 
 

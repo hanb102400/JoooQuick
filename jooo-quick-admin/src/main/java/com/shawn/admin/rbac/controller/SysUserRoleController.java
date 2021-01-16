@@ -36,7 +36,7 @@ public class SysUserRoleController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Integer id) {
-        SysUserRole sysUserRole = sysUserRoleService.findOne(id).get();
+        SysUserRole sysUserRole = sysUserRoleService.findById(id).get();
         return Responses.success(sysUserRole);
     }
 
@@ -88,7 +88,7 @@ public class SysUserRoleController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Integer id) {
-        sysUserRoleService.delete(id);
+        sysUserRoleService.deleteById(id);
         return Responses.success();
     }
 

@@ -36,7 +36,7 @@ public class SysMenuController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Integer menuId) {
-        SysMenu sysMenu = sysMenuService.findOne(menuId).get();
+        SysMenu sysMenu = sysMenuService.findById(menuId).get();
         return Responses.success(sysMenu);
     }
 
@@ -88,7 +88,7 @@ public class SysMenuController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Integer menuId) {
-        sysMenuService.delete(menuId);
+        sysMenuService.deleteById(menuId);
         return Responses.success();
     }
 

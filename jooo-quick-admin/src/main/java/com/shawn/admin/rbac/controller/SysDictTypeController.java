@@ -36,7 +36,7 @@ public class SysDictTypeController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Integer dictId) {
-        SysDictType sysDictType = sysDictTypeService.findOne(dictId).get();
+        SysDictType sysDictType = sysDictTypeService.findById(dictId).get();
         return Responses.success(sysDictType);
     }
 
@@ -88,7 +88,7 @@ public class SysDictTypeController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Integer dictId) {
-        sysDictTypeService.delete(dictId);
+        sysDictTypeService.deleteById(dictId);
         return Responses.success();
     }
 

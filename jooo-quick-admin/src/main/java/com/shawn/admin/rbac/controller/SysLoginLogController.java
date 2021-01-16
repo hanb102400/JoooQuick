@@ -36,7 +36,7 @@ public class SysLoginLogController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Integer loginId) {
-        SysLoginLog sysLoginLog = sysLoginLogService.findOne(loginId).get();
+        SysLoginLog sysLoginLog = sysLoginLogService.findById(loginId).get();
         return Responses.success(sysLoginLog);
     }
 
@@ -88,7 +88,7 @@ public class SysLoginLogController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Integer loginId) {
-        sysLoginLogService.delete(loginId);
+        sysLoginLogService.deleteById(loginId);
         return Responses.success();
     }
 

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.Mapping;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Mapping
 @Documented

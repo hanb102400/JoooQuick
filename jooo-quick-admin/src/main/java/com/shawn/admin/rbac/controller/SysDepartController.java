@@ -43,7 +43,7 @@ public class SysDepartController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Integer departId) {
-        SysDepart sysDepart = sysDepartService.findOne(departId).get();
+        SysDepart sysDepart = sysDepartService.findById(departId).get();
         return Responses.success(sysDepart);
     }
 
@@ -83,7 +83,7 @@ public class SysDepartController extends BaseController {
     @RequestMapping("/edit")
     @ResponseBody
     public Response edit(@RequestBody SysDepart sysDepart) {
-        sysDepartService.update(sysDepart);
+        sysDepartService.save(sysDepart);
         return Responses.success();
     }
 
@@ -96,7 +96,7 @@ public class SysDepartController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Integer departId) {
-        sysDepartService.delete(departId);
+        sysDepartService.deleteById(departId);
         return Responses.success();
     }
 

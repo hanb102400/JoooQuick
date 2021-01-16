@@ -51,7 +51,6 @@ public class QueryHelper {
             //过滤逻辑删除字段
             if(field.isAnnotationPresent(LogicDelete.class)){
                 String columnName = BeanReflections.getColumnName(field);
-                Object value = BeanReflections.invokeGetMethod(field.getName(), query);
                 LogicDelete logicDelete = field.getAnnotation(LogicDelete.class);
                 int deleteFlag = logicDelete.value();
                 criteria.andNotEqualTo(columnName, deleteFlag);
@@ -61,7 +60,7 @@ public class QueryHelper {
                 //默认查询，根据Id和Column注解生成条件
                 if (field.isAnnotationPresent(Id.class) || field.isAnnotationPresent(Column.class)) {
                     String columnName = BeanReflections.getColumnName(field);
-                    Object value = BeanReflections.invokeGetMethod(field.getName(), query);
+                    Object value = BeanReflections.readField(field, query);
                     if (value == null || StringUtils.isBlank(value.toString())) {
                         continue;
                     }
@@ -76,7 +75,7 @@ public class QueryHelper {
                     LikeMatch match = q.match();
 
                     String columnName = BeanReflections.getColumnName(field);
-                    Object value = BeanReflections.invokeGetMethod(field.getName(), query);
+                    Object value = BeanReflections.readField(field, query);
                     if (value == null || StringUtils.isBlank(value.toString())) {
                         continue;
                     }

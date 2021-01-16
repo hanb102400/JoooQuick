@@ -36,7 +36,7 @@ public class SysRoleMenuController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Integer id) {
-        SysRoleMenu sysRoleMenu = sysRoleMenuService.findOne(id).get();
+        SysRoleMenu sysRoleMenu = sysRoleMenuService.findById(id).get();
         return Responses.success(sysRoleMenu);
     }
 
@@ -88,7 +88,7 @@ public class SysRoleMenuController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Integer id) {
-        sysRoleMenuService.delete(id);
+        sysRoleMenuService.deleteById(id);
         return Responses.success();
     }
 

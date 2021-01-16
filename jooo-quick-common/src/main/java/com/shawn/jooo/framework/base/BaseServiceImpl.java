@@ -1,8 +1,8 @@
 package com.shawn.jooo.framework.base;
 
 
-import com.shawn.jooo.framework.mybatis.annotation.LogicDelete;
 import com.shawn.jooo.framework.mybatis.condition.Example;
+import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
 import com.shawn.jooo.framework.mybatis.reflect.ClassTypeAdapt;
 import com.shawn.jooo.framework.core.page.Page;
 import com.shawn.jooo.framework.core.page.PageImpl;
@@ -11,18 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Id;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,17 +95,6 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
     }
 
     /**
-     * 根据id判断是否存在
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public boolean exists(ID id) {
-        return getMapper().selectByPrimaryKey(id) != null;
-    }
-
-    /**
      * 根据条件，判断是否存在
      *
      * @param example
@@ -119,17 +105,15 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
         return getMapper().countByExample(example) > 0;
     }
 
-
     /**
-     * 根据id查询
+     * 根据id判断是否存在
      *
      * @param id
      * @return
      */
     @Override
-    public Optional<T> findOne(ID id) {
-        T data = getMapper().selectByPrimaryKey(id);
-        return Optional.ofNullable(data);
+    public boolean existsById(ID id) {
+        return getMapper().selectByPrimaryKey(id) != null;
     }
 
     /**
@@ -150,6 +134,41 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
             }
         }
         return Optional.empty();
+    }
+
+
+    /**
+     * 根据id查询
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Optional<T> findById(ID id) {
+        T data = getMapper().selectByPrimaryKey(id);
+        return Optional.ofNullable(data);
+    }
+
+    @Override
+    public T getOne(ID id) {
+        return findById(id).get();
+    }
+
+
+    /**
+     * 根据id列表查询
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<T> findAllById(List<ID> ids) {
+        Stream<ID> stream = StreamSupport.stream(ids.spliterator(), false);
+        List<T> list = stream.map(id -> getMapper().selectByPrimaryKey(id)).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(list)) {
+            list = Collections.emptyList();
+        }
+        return list;
     }
 
 
@@ -180,22 +199,6 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
             list = Collections.emptyList();
         }
         return new PageImpl(list, pageable);
-    }
-
-    /**
-     * 根据id列表查询
-     *
-     * @param ids
-     * @return
-     */
-    @Override
-    public List<T> findAll(List<ID> ids) {
-        Stream<ID> stream = StreamSupport.stream(ids.spliterator(), false);
-        List<T> list = stream.map(id -> getMapper().selectByPrimaryKey(id)).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(list)) {
-            list = Collections.emptyList();
-        }
-        return list;
     }
 
 
@@ -236,7 +239,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * @param entity
      */
     @Override
-    public int save(T entity) {
+    public int insert(T entity) {
         return getMapper().insert(entity);
     }
 
@@ -262,24 +265,29 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
     }
 
     /**
-     * 存在则更新记录，不存在则保存记录
+     * 存在则修改记录，不存在则新增记录
      *
      * @param entity
      */
     @Override
     @Transactional
-    public int saveOrUpdate(T entity) {
+    public T save(T entity) {
         ID id = getPrimaryKey(entity);
-        Assert.notNull(id, "get id column is null of " + entity.getClass().getName());
-        if (id != null) {
-            T result = getMapper().selectByPrimaryKey(id);
-            if (result != null) {
-                return update(entity);
-            } else {
-                return save(entity);
+        if (id == null) {
+            insert(entity);
+            return entity;
+        } else {
+            T update = getMapper().selectByPrimaryKey(id);
+            if (update == null) { //新增
+                insert(entity);
+                return entity;
+            } else {    //修改
+                BeanReflections.copyPropertiesIgnoreNull(entity, update);
+                update(update);
+                return update;
             }
         }
-        return 0;
+
     }
 
     /**
@@ -288,16 +296,35 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * @param entities
      */
     @Override
-    public void saveAllBatch(List<T> entities) {
+    public void saveAllInBatch(List<T> entities) {
         final int batch = 5000;
         if (!CollectionUtils.isEmpty(entities)) {
             while (entities.size() > batch) {
                 List inserts = entities.subList(0, batch);
                 entities = entities.subList(batch, entities.size());
-                getMapper().insertBatch(inserts);
+                getMapper().insertInBatch(inserts);
             }
             if (entities.size() > 0) {
-                getMapper().insertBatch(entities);
+                getMapper().insertInBatch(entities);
+            }
+        }
+    }
+
+    /**
+     * 批量插入
+     *
+     * @param entities
+     */
+    @Override
+    public void saveAllInBatch(List<T> entities, int batchSize) {
+        if (!CollectionUtils.isEmpty(entities)) {
+            while (entities.size() > batchSize) {
+                List inserts = entities.subList(0, batchSize);
+                entities = entities.subList(batchSize, entities.size());
+                getMapper().insertInBatch(inserts);
+            }
+            if (entities.size() > 0) {
+                getMapper().insertInBatch(entities);
             }
         }
     }
@@ -309,7 +336,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * @param id
      */
     @Override
-    public void delete(ID id) {
+    public void deleteById(ID id) {
         getMapper().deleteByPrimaryKey(id);
     }
 
@@ -328,7 +355,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * 删除所有
      */
     @Override
-    public void deleteAll() {
+    public void deleteAllInBatch() {
         getMapper().deleteByExample(null);
     }
 
@@ -339,84 +366,9 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      */
     @Override
     @Transactional
-    public void deleteAll(List<ID> ids) {
+    public void deleteInBatch(List<ID> ids) {
         ids.forEach(id -> getMapper().deleteByPrimaryKey(id));
     }
-
-
-    /**
-     * 逻辑删除
-     */
-    @Override
-    @Transactional
-    public void logicDelete(ID id) {
-        T data = getMapper().selectByPrimaryKey(id);
-        data = setLogicDelete(data);
-        this.update(data);
-    }
-
-    @Override
-    @Transactional
-    public void logicDelete(Example example) {
-        List<T> list = getMapper().selectByExample(example);
-        if (!CollectionUtils.isEmpty(list)) {
-            list.stream().forEach(data -> {
-                data = setLogicDelete(data);
-                this.update(data);
-            });
-        }
-    }
-
-    /**
-     * 删除列表数据
-     *
-     * @param ids
-     */
-    @Override
-    @Transactional
-    public void logicDeleteAll(List<ID> ids) {
-        List<T> list = ids.stream().map(id -> getMapper().selectByPrimaryKey(id)).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(list)) {
-            list.stream().forEach(data -> {
-                data = setLogicDelete(data);
-                this.update(data);
-            });
-        }
-    }
-
-    /**
-     * 删除所有
-     */
-    @Override
-    @Transactional
-    public void logicDeleteAll() {
-        List<T> list = getMapper().selectByExample(null);
-        if (!CollectionUtils.isEmpty(list)) {
-            list.stream().forEach(data -> {
-                data = setLogicDelete(data);
-                this.update(data);
-            });
-        }
-    }
-
-
-    private T setLogicDelete(T entity) {
-        Class<T> clazz = getClassType();
-        Field[] fields = clazz.getDeclaredFields();
-        Optional<Field> optional = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(LogicDelete.class)).findFirst();
-        Field field = optional.orElseThrow(() -> new RuntimeException(clazz.getName() + "逻辑删除必须存在@LogicDelete注解字段"));
-        try {
-            LogicDelete logicDelete = field.getAnnotation(LogicDelete.class);
-            int deleteFlag = logicDelete.value();
-            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), getClassType());
-            Method setMethod = pd.getWriteMethod();
-            setMethod.invoke(entity, deleteFlag);
-        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-            throw new RuntimeException("serviceImpl logic delete value error", e);
-        }
-        return entity;
-    }
-
 
     /**
      * getPrimaryKey
@@ -425,18 +377,13 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * @return
      */
     private ID getPrimaryKey(T entity) {
-        ID idValue = null;
         Class<T> clazz = getClassType();
-        Field[] fields = clazz.getDeclaredFields();
-        Optional<Field> optional = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Id.class)).findFirst();
+        List<Field> fields = BeanReflections.getFields(clazz);
+        Optional<Field> optional = fields.stream().filter(field -> field.isAnnotationPresent(Id.class)).findFirst();
         Field field = optional.orElseThrow(() -> new RuntimeException(clazz.getName() + "必须存在@Id注解字段"));
-        try {
-            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), getClassType());
-            Method getMethod = pd.getReadMethod();
-            idValue = (ID) getMethod.invoke(entity);
-        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-            throw new RuntimeException("serviceImpl get PrimaryKey value error", e);
-        }
-        return idValue;
+        ID id = (ID) BeanReflections.readField(field, entity);
+        return id;
     }
+
+
 }

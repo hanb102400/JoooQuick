@@ -4,6 +4,7 @@ import com.shawn.jooo.framework.core.tree.Tree;
 import com.shawn.jooo.framework.core.tree.TreeHelper;
 import com.shawn.jooo.framework.core.tree.TreeNode;
 import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class OptionHelper {
         List<TreeOption> options = new ArrayList<>();
         //生成树
         for (T ch : list) {
-            Number parentId = (Number) BeanReflections.invokeGetMethod(parentIdKey, ch);
+            Number parentId = (Number) BeanReflections.readField(parentIdKey, ch);
             if (parentId == null || 0L == parentId.longValue()) {
                 //找到根节点，解析当前节点的子节点数据
                 TreeOption root = genChildren(ch, list, idKey, parentIdKey, labelKey);
@@ -46,14 +47,16 @@ public class OptionHelper {
         for (T item : list) {
 
             //查找当前节点下的子元素
-            Number id = (Number) BeanReflections.invokeGetMethod(IdKey, node);
-            Number parentId = (Number) BeanReflections.invokeGetMethod(parentIdKey, item);
-            String label = (String) BeanReflections.invokeGetMethod(labelKey, node);
+            Number id = (Number) BeanReflections.readField(IdKey, node);
+            Number parentId = (Number) BeanReflections.readField(parentIdKey, item);
+            String label = (String) BeanReflections.readField(labelKey, node);
 
             option.setId(String.valueOf(id));
             option.setParentId(String.valueOf(parentId));
             option.setLabel(label);
 
+            Assert.notNull(parentId, "parentId must be not null");
+            Assert.notNull(id, "id must be not null");
             //找到子元素后处理
             if (parentId.longValue() == id.longValue()) {
                 TreeOption child = genChildren(item, list, IdKey, parentIdKey, labelKey);

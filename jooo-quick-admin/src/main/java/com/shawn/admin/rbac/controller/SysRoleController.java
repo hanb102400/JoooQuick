@@ -36,7 +36,7 @@ public class SysRoleController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Long roleId) {
-        SysRole sysRole = sysRoleService.findOne(roleId).get();
+        SysRole sysRole = sysRoleService.findById(roleId).get();
         return Responses.success(sysRole);
     }
 
@@ -48,7 +48,7 @@ public class SysRoleController extends BaseController {
      */
     @RequestMapping( "/list")
     @ResponseBody
-    public Response list(SysRole sysRole) {
+    public Response list(@RequestBody(required=false) SysRole sysRole) {
         Page page = sysRoleService.findAll(QueryHelper.getExample(sysRole),  PageHelper.getPage());
         return Responses.success(page);
     }
@@ -88,7 +88,7 @@ public class SysRoleController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Long roleId) {
-        sysRoleService.delete(roleId);
+        sysRoleService.deleteById(roleId);
         return Responses.success();
     }
 

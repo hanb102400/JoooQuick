@@ -39,10 +39,10 @@ public class SysRole extends BaseBean implements Serializable {
     private String roleCode;
 
     /**
-     * scope 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限）
+     * scope 数据范围
      */
     @Column(name="scope")
-    private Short scope;
+    private String scope;
 
     /**
      * status 角色状态状态（0正常 1停用，-1删除）
@@ -106,15 +106,15 @@ public class SysRole extends BaseBean implements Serializable {
         return this.roleCode;
     }
 
-    public void setScope( Short scope ) {
-            this.scope = scope;
+    public String getScope() {
+        return scope;
     }
 
-    public Short getScope() {
-        return this.scope;
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
-    public void setStatus( Short status ) {
+    public void setStatus(Short status ) {
             this.status = status;
     }
 

@@ -47,7 +47,7 @@ public class SysUserController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Long userId) {
-        SysUser sysUser = sysUserService.findOne(userId).get();
+        SysUser sysUser = sysUserService.findById(userId).get();
         return Responses.success(sysUser);
     }
 
@@ -110,7 +110,7 @@ public class SysUserController extends BaseController {
     public Response remove(@RequestParam String userId) {
         List<String> ids = Arrays.asList(StringUtils.split(userId,","));
         List<Long> idList =ids.stream().map(id->Long.parseLong(id)).collect(Collectors.toList());
-        sysUserService.logicDeleteAll(idList);
+        sysUserService.deleteInBatch(idList);
         return Responses.success();
     }
 

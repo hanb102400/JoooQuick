@@ -81,7 +81,7 @@ public class JdbcTypes {
      * @param camelText  驼峰字符串
      * @return          下划线字符串
      */
-    public static String getImprovedName(String camelText) {
+    public static String getUnderscoreName(String camelText) {
         return camel2Underscore(camelText);
     }
 

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.shawn.jooo.framework.json.annotation.Timestamp;
+import com.shawn.jooo.framework.json.type.TimestampType;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -18,14 +19,14 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeToJsonDeserializer extends JsonDeserializer<Long> implements ContextualDeserializer {
 
-    private TimeUnit unit;
+    private TimestampType type;
     private String format;
 
     public TimeToJsonDeserializer() {
     }
 
-    public TimeToJsonDeserializer(TimeUnit unit, String format) {
-        this.unit = unit;
+    public TimeToJsonDeserializer(TimestampType type, String format) {
+        this.type = type;
         this.format = format;
     }
 
@@ -36,7 +37,16 @@ public class TimeToJsonDeserializer extends JsonDeserializer<Long> implements Co
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
             LocalDateTime dateTime = LocalDateTime.parse(text, formatter);
             Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
-            long timestamp = unit.convert(instant.toEpochMilli(), unit);
+            long timestamp = 0L;
+            if (TimestampType.TIMESTAMP.equals(type)) { //解析json时间，毫秒转换到毫秒
+                timestamp = instant.toEpochMilli();
+            }
+            if (TimestampType.TIME.equals(type)) {//解析json时间，毫秒转换到秒
+                timestamp = TimeUnit.SECONDS.convert(instant.toEpochMilli(), TimeUnit.MILLISECONDS);
+            }
+            if (TimestampType.DATE.equals(type)) { //解析json时间，毫秒转换到天
+                timestamp = TimeUnit.DAYS.convert(instant.toEpochMilli(), TimeUnit.MILLISECONDS);
+            }
             return timestamp;
         }
         return null;
@@ -47,9 +57,9 @@ public class TimeToJsonDeserializer extends JsonDeserializer<Long> implements Co
         if (beanProperty != null) {
             Timestamp ann = beanProperty.getAnnotation(Timestamp.class);
             if (ann != null) {
-                unit = ann.unit();
+                type = ann.value();
                 format = ann.format();
-                return new TimeToJsonDeserializer(unit, format);
+                return new TimeToJsonDeserializer(type, format);
             }
         }
         return null;

@@ -27,7 +27,7 @@ public class TreeHelper {
 
         //生成树
         for (T ch : list) {
-            Number parentId = (Number) BeanReflections.invokeGetMethod(parentIdKey, ch);
+            Number parentId = (Number) BeanReflections.readField(parentIdKey, ch);
             if (parentId == null || 0L == parentId.longValue()) {
                 //找到根节点，解析当前节点的子节点数据
                 T root = genChildren(ch, list, idKey, parentIdKey);
@@ -55,8 +55,8 @@ public class TreeHelper {
     private static <T extends TreeNode> T genChildren(T node, List<T> list, String IdKey, String parentIdKey) {
         List<T> children = new ArrayList<>();
         for (T item : list) {
-            Number parentId = (Number) BeanReflections.invokeGetMethod(parentIdKey, item);
-            Number id = (Number) BeanReflections.invokeGetMethod(IdKey, node);
+            Number parentId = (Number) BeanReflections.readField(parentIdKey, item);
+            Number id = (Number) BeanReflections.readField(IdKey, node);
             if (parentId.longValue() == id.longValue()) {
                 children.add(genChildren(item, list, IdKey, parentIdKey));
             }

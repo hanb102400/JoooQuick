@@ -41,9 +41,32 @@ spring:
                 max-idle: 8
                 min-idle: 0
                 max-wait: -1
+    quartz:
+        job-store-type: jdbc
+        wait-for-jobs-to-complete-on-shutdown: true
+        overwrite-existing-jobs: true
+        properties:
+          org:
+            quartz:
+              scheduler:
+                instanceName: scheduler
+                instanceId: AUTO
+              jobStore:
+                class: org.quartz.impl.jdbcjobstore.JobStoreTX
+                driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+                tablePrefix: QRTZ_
+                isClustered: true
+                clusterCheckinInterval: 10000
+                useProperties: false
+              threadPool:
+                class: org.quartz.simpl.SimpleThreadPool
+                threadCount: 10
+                threadPriority: 5
+                threadsInheritContextClassLoaderOfInitializingThread: true
+
 
 cas:
-  enable: true
+  enable: false
   server-url-prefix: http://cas.server.com/cas
   server-login-url:  http://cas.server.com/cas/login
   server-logout-url:  http://cas.server.com/cas/logout
@@ -70,10 +93,10 @@ logging:
         com.shawn: debug
 
 app:
+    prefix: jooo
+    host: localhost
     indexUrl: http://cas.client.com:1357/
     sign:
       check: true
       secret: 1357911
     cacheExpireTime: 600
-    host: localhost
-    prefix: jooo

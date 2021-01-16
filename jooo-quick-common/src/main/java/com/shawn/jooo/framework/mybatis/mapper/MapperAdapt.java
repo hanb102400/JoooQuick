@@ -52,6 +52,6 @@ public interface MapperAdapt<T, ID extends Serializable> {
     @UpdateProvider(type = MybatisProvider.UpdateByPrimaryKeyProvider.class, method = "staticSQL")
     int updateByPrimaryKey(T record);
 
-    @InsertProvider(type = MybatisProvider.InsertBatchProvider.class, method = "staticSQL")
-    int insertBatch(List<T> list);
+    @InsertProvider(type = MybatisProvider.InsertInBatchProvider.class, method = "staticSQL")
+    int insertInBatch(List<T> list);
 }

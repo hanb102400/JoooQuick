@@ -25,58 +25,54 @@ public interface BaseService<T, ID extends Serializable> {
 
     boolean exists(Example example);
 
-    boolean exists(ID id);
+    boolean existsById(ID id);
 
     /**
      * find
      */
-    Optional<T> findOne(ID id);
+    Optional<T> findById(ID id);
 
     Optional<T> findOne(Example example);
+
+    T getOne(ID id);
+
+    List<T> findAllById(List<ID> ids);
 
     List<T> findAll();
 
     List<T> findAll(Example example);
-
-    List<T> findAll(List<ID> ids);
 
     Page<T> findAll(Pageable pageable);
 
     Page<T> findAll(Example example, Pageable pageable);
 
     /**
-     * save or update
+     * insert or update
      */
-    int save(T entity);
+    //save方法，存在id则update，不存在id执行insert
+    T save(T entity);
+
+    void saveAllInBatch(List<T> entities);
+
+    void saveAllInBatch(List<T> entities, int batchSize);
+
+    int insert(T entity);
 
     int update(T entity);
 
     int update(T entity, Example example);
 
-    int saveOrUpdate(T entity);
-
-    void saveAllBatch(List<T> entities);
 
     /**
      * delete
      */
-    void deleteAll();
-
-    void deleteAll(List<ID> ids);
+    void deleteById(ID id);
 
     void delete(Example example);
 
-    void delete(ID id);
+    void deleteAllInBatch();
 
-    /**
-     * logic delete
-     */
-    void logicDeleteAll();
+    void deleteInBatch(List<ID> ids);
 
-    void logicDeleteAll(List<ID> ids);
-
-    void logicDelete(ID id);
-
-    void logicDelete(Example example);
 
 }

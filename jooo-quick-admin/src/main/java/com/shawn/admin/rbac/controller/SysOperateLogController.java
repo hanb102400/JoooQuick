@@ -36,7 +36,7 @@ public class SysOperateLogController extends BaseController {
     @RequestMapping("/detail")
     @ResponseBody
     public Response detail(@RequestParam Integer operId) {
-        SysOperateLog sysOperateLog = sysOperateLogService.findOne(operId).get();
+        SysOperateLog sysOperateLog = sysOperateLogService.findById(operId).get();
         return Responses.success(sysOperateLog);
     }
 
@@ -88,7 +88,7 @@ public class SysOperateLogController extends BaseController {
     @RequestMapping(value = "/remove")
     @ResponseBody
     public Response remove(@RequestParam Integer operId) {
-        sysOperateLogService.delete(operId);
+        sysOperateLogService.deleteById(operId);
         return Responses.success();
     }
 

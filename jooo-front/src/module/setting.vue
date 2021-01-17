@@ -18,28 +18,28 @@
                         <ul class="nav sub-menu">
                             <li class="">
                                 <router-link to="/rbac/depart">
-                                    <span>部门列表</span>
+                                    <span>部门管理</span>
                                 </router-link>
                             </li>
                         </ul>
                         <ul class="nav sub-menu">
                             <li class="">
                                 <router-link to="/rbac/role">
-                                    <span> 角色列表</span>
+                                    <span> 角色管理</span>
                                 </router-link>
                             </li>
                         </ul>
                         <ul class="nav sub-menu">
                             <li class="">
                                 <router-link to="/rbac/user">
-                                    <span> 用户列表</span>
+                                    <span> 用户管理</span>
                                 </router-link>
                             </li>
                         </ul>
                         <ul class="nav sub-menu">
                             <li class="">
                                 <router-link to="/rbac/menu">
-                                    <span> 菜单列表</span>
+                                    <span> 菜单管理</span>
                                 </router-link>
                             </li>
                         </ul>

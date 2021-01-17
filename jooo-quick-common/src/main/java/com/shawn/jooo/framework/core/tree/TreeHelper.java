@@ -39,7 +39,7 @@ public class TreeHelper {
         if (roots.size() > 0) {
             tree.setContent(roots);
         } else {
-            tree.setContent(null);
+            tree.setContent(new ArrayList<>());
         }
         return tree;
     }

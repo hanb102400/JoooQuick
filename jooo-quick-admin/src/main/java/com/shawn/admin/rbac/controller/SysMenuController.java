@@ -1,6 +1,8 @@
 package com.shawn.admin.rbac.controller;
 
 
+import com.shawn.jooo.framework.core.tree.Tree;
+import com.shawn.jooo.framework.core.tree.TreeHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.shawn.jooo.framework.mybatis.condition.QueryHelper;
@@ -12,6 +14,8 @@ import com.shawn.jooo.framework.core.response.Responses;
 import com.shawn.jooo.framework.base.BaseController;
 import com.shawn.admin.rbac.entity.SysMenu;
 import com.shawn.admin.rbac.service.SysMenuService;
+
+import java.util.List;
 
 
 /**
@@ -90,6 +94,20 @@ public class SysMenuController extends BaseController {
     public Response remove(@RequestParam Integer menuId) {
         sysMenuService.deleteById(menuId);
         return Responses.success();
+    }
+
+    /**
+     * ajax分页查询，分页参数pageNo,pageSize
+     *
+     * @param sysMenu
+     * @return
+     */
+    @RequestMapping( "/tree")
+    @ResponseBody
+    public Response tree(@RequestBody(required = false) SysMenu sysMenu) {
+        List<SysMenu> list = sysMenuService.findAll();
+        Tree<SysMenu> tree = TreeHelper.listToTree(list,"menuId","parentId");
+        return Responses.success(tree);
     }
 
  }

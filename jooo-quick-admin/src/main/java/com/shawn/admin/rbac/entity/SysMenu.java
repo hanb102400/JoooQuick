@@ -1,5 +1,6 @@
 package com.shawn.admin.rbac.entity;
 import com.shawn.jooo.framework.base.BaseBean;
+import com.shawn.jooo.framework.core.tree.TreeNode;
 
 import java.io.Serializable;
 import javax.persistence.Id;
@@ -15,7 +16,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @Table(name="sys_menu")
-public class SysMenu extends BaseBean implements Serializable {
+public class SysMenu extends TreeNode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

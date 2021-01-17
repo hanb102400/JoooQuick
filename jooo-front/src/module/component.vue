@@ -11,6 +11,30 @@
                 <div class="sidebar-inner">
                     <!-- Start #sideNav -->
                     <div class="sidebar-navigation">导航菜单1</div>
+
+                    <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" router>
+                        <el-submenu index="1">
+                            <template slot="title">
+                                <i class="el-icon-location"></i>
+                                <span>引导页</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item index="1-1">引导页1</el-menu-item>
+                                <el-menu-item index="1-2">引导页2</el-menu-item>
+                            </el-menu-item-group>
+                        </el-submenu>
+                          <el-submenu index="2">
+                            <template slot="title">
+                                <i class="el-icon-location"></i>
+                                <span>常用组件</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item index="/component/table">表格</el-menu-item>
+                                <el-menu-item index="/component/form">表单</el-menu-item>
+                            </el-menu-item-group>
+                        </el-submenu>
+                    </el-menu>
+
                     <ul id="sideNav" class="nav nav-pills nav-stacked main-menu">
                         <li class="active">
                             <a href="#">

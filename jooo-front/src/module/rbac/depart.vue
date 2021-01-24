@@ -171,7 +171,6 @@ module.exports = {
             if(row){
                 this.form.parentId = row.departId;
             }
-            console.log("aadd",this.form);
             this.showDialog = true;
         },
         handleEdit: async function (index, row) {
@@ -185,7 +184,6 @@ module.exports = {
             this.form = resp.data;
         },
          handleSubmit() {
-             console.log("this.formthis.formthis.form",this.form)
             this.$refs['form'].validate((valid) => {
                 if (valid) {
                     if (this.form.departId != undefined) {

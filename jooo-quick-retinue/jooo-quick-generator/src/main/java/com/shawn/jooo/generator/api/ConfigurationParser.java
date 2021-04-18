@@ -2,9 +2,9 @@ package com.shawn.jooo.generator.api;
 
 import com.shawn.jooo.generator.config.Configuration;
 import com.shawn.jooo.generator.xml.ParserEntityResolver;
+import com.shawn.jooo.generator.xml.ParserErrorHandler;
 import com.shawn.jooo.generator.config.PropertyHolder;
 import com.shawn.jooo.generator.exception.XMLParserException;
-import com.shawn.jooo.generator.xml.ParserErrorHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;

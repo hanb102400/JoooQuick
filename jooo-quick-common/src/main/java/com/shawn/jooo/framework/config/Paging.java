@@ -1,14 +1,7 @@
 package com.shawn.jooo.framework.config;
 
 import com.shawn.jooo.framework.utils.SpringContextHolder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 @ConfigurationProperties(prefix = "paging")
 public class Paging {

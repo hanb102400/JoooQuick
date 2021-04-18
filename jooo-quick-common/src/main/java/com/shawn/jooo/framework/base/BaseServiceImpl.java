@@ -11,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -296,6 +294,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * @param entities
      */
     @Override
+    @Transactional
     public void saveAllInBatch(List<T> entities) {
         final int batch = 5000;
         if (!CollectionUtils.isEmpty(entities)) {
@@ -316,6 +315,7 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
      * @param entities
      */
     @Override
+    @Transactional
     public void saveAllInBatch(List<T> entities, int batchSize) {
         if (!CollectionUtils.isEmpty(entities)) {
             while (entities.size() > batchSize) {
@@ -385,5 +385,18 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> extends ClassT
         return id;
     }
 
+    private void setPrimaryKey(T entity, int lastId) {
+        Class<T> clazz = getClassType();
+        List<Field> fields = BeanReflections.getFields(clazz);
+        Optional<Field> optional = fields.stream().filter(field -> field.isAnnotationPresent(Id.class)).findFirst();
+        Field field = optional.orElseThrow(() -> new RuntimeException(clazz.getName() + "必须存在@Id注解字段"));
+        ID id = (ID) BeanReflections.readField(field, entity);
+        if (id instanceof Integer || id instanceof Long) {
+            BeanReflections.writeField(field, lastId, entity);
+        }
+        if(id instanceof Short) {
+            BeanReflections.writeField(field, (short)lastId, entity);
+        }
+    }
 
 }

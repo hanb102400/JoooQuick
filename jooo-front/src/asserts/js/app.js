@@ -1,14 +1,6 @@
 /** Vue.import **/
-/*Vue.import = function(path, func) {
-    if (func == undefined || func == null) {
-        return httpVueLoader(path);
-    } else {
-        console.log("httpVueLoader(path)()", httpVueLoader(path)())
-        return httpVueLoader(path)().then(data => func(data));
-    }
 
-}*/
-Vue.import = function(paths, func) {
+Vue.import = function (paths, func) {
     if (typeof paths === "string") {
         if (!func) {
             return httpVueLoader(paths);
@@ -37,6 +29,7 @@ Vue.import = function(paths, func) {
 axios.defaults.timeout = 30000;
 axios.defaults.withCredentials = true;
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
+var lockLogin = false;
 
 axios.interceptors.response.use(
     (response) => {
@@ -49,17 +42,29 @@ axios.interceptors.response.use(
     },
     (error) => {
         if (error.response.status) {
+        
             switch (error.response.status) {
                 case 401:
-                    console.log(error.response);
-                    if (error.response.data.loginUrl) {
-                        window.document.location = error.response.data.loginUrl;
-                    } else {
-
-                        router.push({
-                            path: "/login",
+                    if(!lockLogin) {
+                        lockLogin = true;
+                        ELEMENT.MessageBox.confirm('当前登陆已经失效，是否返回登陆页面?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            if (error.response.data.loginUrl) {
+                                window.document.location = error.response.data.loginUrl;
+                            } else {
+                                //过期提示登陆
+                                router.push({
+                                    path: "/login",
+                                });
+                            }
+                            lockLogin = false;
+                        }).catch(() => {
+                            lockLogin = false;
                         });
-                    };
+                    } 
                     break;
                 case 403:
                     console.log('errr', error);
@@ -79,7 +84,7 @@ axios.interceptors.response.use(
 );
 
 var Net = {};
-Net.getUrl = function(url) {
+Net.getUrl = function (url) {
     if (url.startsWith("https://") || url.startsWith("http://")) {
         return url;
     } else if (url.startsWith("/")) {
@@ -90,7 +95,7 @@ Net.getUrl = function(url) {
 };
 
 //封装get方法,
-Net.get = function(url, data) {
+Net.get = function (url, data) {
     return new Promise((resolve, reject) => {
         axios
             .get(Net.getUrl(url), { params: data })
@@ -104,7 +109,7 @@ Net.get = function(url, data) {
 };
 
 // 封装post方法,发送json请求
-Net.post = function(url, data) {
+Net.post = function (url, data) {
     return new Promise((resolve, reject) => {
         axios
             .post(Net.getUrl(url), data)
@@ -118,7 +123,7 @@ Net.post = function(url, data) {
 };
 
 // 封装post方法,发送Form请求
-Net.postForm = function(url, data) {
+Net.postForm = function (url, data) {
     return new Promise((resolve, reject) => {
         axios
             .post(Net.getUrl(url), Qs.stringify(data), {
@@ -134,7 +139,7 @@ Net.postForm = function(url, data) {
 };
 
 //loadScript
-Net.loadScript = function(src, callback) {
+Net.loadScript = function (src, callback) {
     var script = document.createElement("script"),
         head = document.getElementsByTagName("head")[0];
     script.type = "text/javascript";
@@ -143,13 +148,13 @@ Net.loadScript = function(src, callback) {
     if (script.addEventListener) {
         script.addEventListener(
             "load",
-            function() {
+            function () {
                 callback && callback();
             },
             false
         );
     } else if (script.attachEvent) {
-        script.attachEvent("onreadystatechange", function() {
+        script.attachEvent("onreadystatechange", function () {
             var target = window.event.srcElement;
             if (target.readyState == "loaded") {
                 callback && callback();
@@ -158,13 +163,3 @@ Net.loadScript = function(src, callback) {
     }
     head.appendChild(script);
 };
-/*
-var App = {}
-
-App.getCookie = function() {
-    return document.cookie;
-};
-
-App.getToken = function() {
-    return '';
-};*/

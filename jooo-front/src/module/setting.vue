@@ -24,40 +24,41 @@
                         </ul>
                         <ul class="nav sub-menu">
                             <li class="">
-                                <router-link to="/rbac/role">
-                                    <span> 角色管理</span>
+                                <router-link to="/rbac/user">
+                                    <span>用户管理</span>
                                 </router-link>
                             </li>
                         </ul>
                         <ul class="nav sub-menu">
                             <li class="">
-                                <router-link to="/rbac/user">
-                                    <span> 用户管理</span>
+                                <router-link to="/rbac/role">
+                                    <span>角色管理</span>
                                 </router-link>
                             </li>
                         </ul>
                         <ul class="nav sub-menu">
                             <li class="">
                                 <router-link to="/rbac/menu">
-                                    <span> 菜单管理</span>
+                                    <span>菜单管理</span>
                                 </router-link>
                             </li>
                         </ul>
+                      
                     </li>
                     <li class="active expand">
                         <a href="#">
                             <i class="fa fa-bars"></i>
-                            <span> 常用组件</span>
+                            <span>常用组件</span>
                         </a>
                         <ul class="nav sub-menu">
                             <li class="">
                                 <router-link to="/component/table">
-                                    <span> 表格</span>
+                                    <span>表格</span>
                                 </router-link>
                             </li>
                             <li class="sub-menu">
                                 <router-link to="/component/form">
-                                    <span> 表单</span>
+                                    <span>表单</span>
                                 </router-link>
                             </li>
                         </ul>

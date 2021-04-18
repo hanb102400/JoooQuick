@@ -41,18 +41,18 @@ public class SignUtils {
 
     public static String md5Sign(Map<String, String> params, String secret) {
 
-        //排序
+        //sort
         String[] keys = params.keySet().toArray(new String[params.size()]);
         Arrays.sort(keys);
 
-        //拼接
+        //append
         StringBuilder paramString = new StringBuilder();
         for (String key : keys) {
             paramString.append(key + "=" + params.get(key));
         }
         paramString.append(secret);
 
-        //编码
+        //encrypt
         try {
             byte[] bytes = encryptMD5(paramString.toString());
             return byte2hex(bytes);

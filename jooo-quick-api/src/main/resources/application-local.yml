@@ -1,6 +1,6 @@
 # server conf
 server:
-    port: 8003
+    port: 18001
     servlet:
         context-path: /
 
@@ -26,27 +26,30 @@ spring:
                 min-idle: 0
                 max-wait: -1
 
-# default conf
+# mybatis conf
 mybatis:
     mapperLocations: classpath*:default/mapper/**/*.xml
     typeAliasesPackage: com.shawn.**.entity
+    showSql: false
 
+# paging
 paging:
   pageNoKey: pageNo
   pageSizeKey: pageSize
 
 logging:
     file:
-        path: ./
-        name: jooo_api.log
+        name: jooo_admin.log
     level:
         root: debug
 
 app:
 
     sign:
-      check: true
-      secret: 1357911
-    cacheExpireTime: 600
+        check: true
+        secret: 1234567890
     host: localhost
     prefix: jooo
+    cache:
+        prefix: externdevice
+        expireTime: 600

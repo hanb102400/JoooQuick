@@ -3,13 +3,13 @@ package com.shawn.jooo.framework.core.tree;
 
 import java.util.List;
 
-public class Tree<T extends TreeNode> {
-
-    private List<T> content;
+public class Tree<T extends TreeNode>  {
 
     private String idKey;
 
     private String parentIdKey;
+
+    private List<T> content;
 
     public Tree() {
 

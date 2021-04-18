@@ -16,6 +16,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -37,7 +38,7 @@ public class MybatisConfig implements TransactionManagementConfigurer {
     @Value("${mybatis.showSql:false}")
     private String showSql;
 
-    @javax.annotation.Resource
+    @Resource
     private DataSource dataSource;
 
     @Override
@@ -65,11 +66,11 @@ public class MybatisConfig implements TransactionManagementConfigurer {
     @Bean
     MybatisPaginationPlugin mybatisPaginationPlugin() {
         //Mybatis分页插件
-        MybatisPaginationPlugin mybatisStatementPlugin = new MybatisPaginationPlugin();
+        MybatisPaginationPlugin mybatisPaginationPlugin = new MybatisPaginationPlugin();
         Properties prop = new Properties();
         prop.setProperty("dialect", "mysql");
-        mybatisStatementPlugin.setProperties(prop);
-        return mybatisStatementPlugin;
+        mybatisPaginationPlugin.setProperties(prop);
+        return mybatisPaginationPlugin;
     }
 
     /**
@@ -87,7 +88,6 @@ public class MybatisConfig implements TransactionManagementConfigurer {
         return mybatisSqlLogPlugin;
     }
 
-
     @Bean(name = "sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
 
@@ -95,18 +95,17 @@ public class MybatisConfig implements TransactionManagementConfigurer {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setTypeAliasesPackage(typeAliasesPackage);
-        //配置xml路径
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        bean.setMapperLocations(resolver.getResources(mapperLocations));
-        //配置插件
         bean.setPlugins(new Interceptor[]{
                 mybatisResultMapPlugin(),
                 mybatisPaginationPlugin(),
-                mybatisSqlLogPlugin(),
+                mybatisSqlLogPlugin()
         });
+
+        //添加XML目录
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        bean.setMapperLocations(resolver.getResources(mapperLocations));
         return bean.getObject();
     }
-
 
     @Bean
     public DataSourceTransactionManager transactionManager() {

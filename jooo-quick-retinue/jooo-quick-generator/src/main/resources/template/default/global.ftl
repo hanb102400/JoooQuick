@@ -2,14 +2,14 @@
 <#assign copyright="Copyright (C) 2013 rats">
 <#assign author="jooo.gen">
 
-<#assign baseBean= "com.shawn.jooo.framework.base.BaseBean" >
-<#assign baseMapper= "com.shawn.jooo.framework.base.BaseMapper" >
-<#assign baseService= "com.shawn.jooo.framework.base.BaseService" >
-<#assign baseServiceImpl= "com.shawn.jooo.framework.base.BaseServiceImpl" >
-<#assign baseController= "com.shawn.jooo.framework.base.BaseController" >
+<#assign baseBean= "com.shawn.jooo.framework.base.BaseEntity" >
+<#assign baseMapper= "BaseMapper" >
+<#assign baseService= "BaseService" >
+<#assign baseServiceImpl= "BaseServiceImpl" >
+<#assign baseController= "BaseController" >
 
-<#assign example= "com.shawn.jooo.framework.mybatis.condition.Example" >
-<#assign page= "com.shawn.jooo.framework.core.page.Page" >
+<#assign example= "Example" >
+<#assign page= "Page" >
 <#assign pageImpl= "com.shawn.jooo.framework.pageImpl" >
 <#assign pageable= "com.shawn.jooo.framework.core.page.Pagable" >
 

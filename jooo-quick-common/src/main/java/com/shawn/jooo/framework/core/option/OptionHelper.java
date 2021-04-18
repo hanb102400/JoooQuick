@@ -1,18 +1,84 @@
 package com.shawn.jooo.framework.core.option;
 
-import com.shawn.jooo.framework.core.tree.Tree;
-import com.shawn.jooo.framework.core.tree.TreeHelper;
-import com.shawn.jooo.framework.core.tree.TreeNode;
+import com.shawn.jooo.framework.mybatis.condition.Direction;
+import com.shawn.jooo.framework.mybatis.condition.Example;
+import com.shawn.jooo.framework.mybatis.condition.Sort;
 import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
+import com.shawn.jooo.framework.utils.SpringContextHolder;
+import com.shawn.jooo.module.dict.entity.SysDictItem;
+import com.shawn.jooo.module.dict.service.SysDictItemService;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OptionHelper {
 
+    private static final String DEFAULT_ID_KEY = "id";
+
+    private static final String DEFAULT_PARENT_ID_KEY = "parentId";
+
+    /**
+     * 字典数据转为option
+     *
+     * @param dictType
+     * @param <T>
+     * @return
+     */
+    public static <T> List<Option> dictToOption(String dictType) {
+        SysDictItemService dictItemService = SpringContextHolder.getBean(SysDictItemService.class);
+        Example example = new Example();
+        example.setOrderByClause(Sort.orderBy(Direction.ASC, SysDictItem::getSort));
+        example.<SysDictItem>createCriteria().andEqualTo(SysDictItem::getDictType, dictType);
+        List<SysDictItem> dictItemList = dictItemService.findAll(example);
+        List<Option> options = dictItemList.stream().map(item -> Option.of(item.getItemValue(), item.getItemLabel())).collect(Collectors.toList());
+        return options;
+    }
+
+    /**
+     * 列表数据转为option
+     *
+     * @param list
+     * @param valueName
+     * @param labelName
+     * @param <T>
+     * @return
+     */
+    public static <T> List<Option> listToOption(List<T> list, String valueName, String labelName) {
+        List<Option> options = new ArrayList<>();
+        for (T obj : list) {
+            Object value = BeanReflections.readField(valueName, obj);
+            String label = BeanReflections.readField(labelName, obj).toString();
+            options.add(Option.of(value, label));
+        }
+        return options;
+    }
+
+    /**
+     * 列表数据转为treeOption
+     *
+     * @param list
+     * @param labelKey
+     * @param <T>
+     * @return
+     */
+    public static <T> List<TreeOption> listToTreeOption(List<T> list, String labelKey) {
+        return listToTreeOption(list, DEFAULT_ID_KEY, DEFAULT_PARENT_ID_KEY, labelKey);
+    }
+
+    /**
+     * 列表数据转为treeOption
+     *
+     * @param list
+     * @param idKey
+     * @param parentIdKey
+     * @param labelKey
+     * @param <T>
+     * @return
+     */
     public static <T> List<TreeOption> listToTreeOption(List<T> list, String idKey, String parentIdKey, String labelKey) {
         List<TreeOption> options = new ArrayList<>();
         //生成树
@@ -32,7 +98,6 @@ public class OptionHelper {
         }
         return Collections.emptyList();
     }
-
 
     /**
      * 递归

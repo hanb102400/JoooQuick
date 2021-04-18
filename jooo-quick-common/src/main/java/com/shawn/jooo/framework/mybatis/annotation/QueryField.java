@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.Mapping;
 
 import java.lang.annotation.*;
 
+/**
+ *
+ * @author shawn
+ */
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Mapping

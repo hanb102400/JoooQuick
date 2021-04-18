@@ -63,9 +63,9 @@ function server(cb) {
         livereload: true, //自动刷新
         direactoryListing: true, //指定目录找到
         open: true, //自动打开
-        proxies: [{
-            source: '/api/',
-            target: 'http://cas.client.com:18081/' //要请求的接口
+        proxies: [{ //代理
+                source: '/api/', 
+                target: 'http://127.0.0.1:18083/'
         }]
     }));
     cb();

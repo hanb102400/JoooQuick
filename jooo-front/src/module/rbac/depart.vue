@@ -50,7 +50,7 @@
             <el-row>
                 <el-col :span="24" v-if="form.parentId !== 0">
                     <el-form-item label="上级部门" prop="parentId">
-                        <treeselect v-model="form.parentId" :options="departOptions" placeholder="选择上级部门" />
+                        <treeselect v-model="form.parentId" :options="departTree" placeholder="选择上级部门" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -113,11 +113,6 @@ module.exports = {
             query: {},
             form: {},
             rules: {
-                parentId: [{
-                    required: true,
-                    message: "上级部门不能为空",
-                    trigger: "blur"
-                }],
                 departName: [{
                     required: true,
                     message: "部门名称不能为空",
@@ -203,7 +198,6 @@ module.exports = {
                 this.$message.success('添加成功!') 
                 this.showDialog = false;
                 this.loadTreeData();
-                this.refreshTreeSelect();
                 this.$refs['form'].resetFields();
             } else {
                this.$message.error(resp.message);
@@ -215,7 +209,6 @@ module.exports = {
                 this.$message.success('修改成功!')
                 this.showDialog = false;
                 this.loadTreeData();
-                this.refreshTreeSelect();
                 this.$refs['form'].resetFields();
             } else {
                 this.$message.error(resp.message);
@@ -251,19 +244,19 @@ module.exports = {
         async loadTreeData() {
             const resp = await Net.post('/sysDepart/tree', this.query)
             console.log("resp.data.content", resp.data.content);
-            this.treeData = resp.data.content;
-        },
-        async refreshTreeSelect(){
-            const resp = await Net.post('/sysDepart/treeSelect', this.query)
-            if (resp.code == 0) {
-                this.departOptions = resp.data;
+            if(resp.code==0) {
+                this.treeData = resp.data.content;
+            }
+           
+            const resp2 = await Net.post('/sysDepart/treeSelect', this.query)
+            if (resp2.code == 0) {
+                this.departTree = resp2.data;
             }
         }
     },
     mounted() {
         this.pageNo = 1;
         this.loadTreeData()
-        this.refreshTreeSelect();
         this.loading = false;
     }
 }

@@ -1,7 +1,6 @@
 package com.shawn.jooo.framework.utils;
 
 
-import com.shawn.jooo.framework.config.HttpClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.RedisStringCommands;

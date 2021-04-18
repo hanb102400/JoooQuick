@@ -7,7 +7,12 @@ import javax.validation.*;
 import java.util.Iterator;
 import java.util.Set;
 
-public class Validations extends Preconditions{
+/**
+ * 参数验证工具类
+ *
+ * @author shawn
+ */
+public class Validations extends Preconditions {
 
     private static Validator validator;
 

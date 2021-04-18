@@ -1,6 +1,7 @@
 package com.shawn.jooo.framework.core.page;
 
 import com.shawn.jooo.framework.config.Paging;
+import com.shawn.jooo.framework.mybatis.reflect.Fn;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -8,6 +9,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -90,5 +93,8 @@ public class PageHelper extends Paging {
         return pageSize;
     }
 
-
+    public static <T,R> Page toVoPage(Page page, Fn<T,R> fn) {
+        List<R> list = (List) page.getContent().stream().map(fn).collect(Collectors.toList());
+        return new PageImpl<R>(list, page.getPageNo(), page.getPageSize(), page.getTotalCount());
+    }
 }

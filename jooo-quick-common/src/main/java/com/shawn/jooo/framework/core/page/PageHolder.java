@@ -19,6 +19,14 @@ public class PageHolder {
         return pageHolder.get();
     }
 
+    public static int getPageNo() {
+        return pageHolder.get().getPageNo();
+    }
+
+    public static int getPageSize() {
+        return pageHolder.get().getPageSize();
+    }
+
     public static void clearContext() {
         pageHolder.remove();
     }

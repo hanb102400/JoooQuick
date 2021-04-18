@@ -4,7 +4,7 @@
         <el-breadcrumb-item> 权限管理</el-breadcrumb-item>
         <el-breadcrumb-item> 角色管理 </el-breadcrumb-item>
     </el-breadcrumb>
-    <el-form inline :model="query" label-position="right" label-width="160px" class="query-form" size="mini">
+    <el-form ref="query" inline :model="query" label-position="right" label-width="160px" class="query-form" size="mini">
         <el-form-item label="角色ID">
             <el-input v-model="query.roleId" placeholder="输入查询"></el-input>
         </el-form-item>
@@ -39,6 +39,8 @@
             <template slot-scope="scope">
                 <el-button type="text" icon="el-icon-edit" size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                 <el-button type="text" icon="el-icon-delete" size="mini" @click="handleRemove(scope.$index, scope.row)">删除</el-button>
+                <el-button type="text" icon="el-icon-edit" size="mini" @click="handleMenuPermission(scope.$index, scope.row)">菜单权限</el-button>
+                 <el-button type="text" icon="el-icon-edit" size="mini" @click="handleDataPermission(scope.$index, scope.row)">数据权限</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -104,6 +106,7 @@ module.exports = {
             if (this.$refs['query']) {
                 this.$refs['query'].resetFields();
             }
+            this.query = {};
         },
         handleAdd: function () {
             if (this.$refs['form']) {

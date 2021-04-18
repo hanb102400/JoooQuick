@@ -5,13 +5,18 @@ import org.springframework.web.bind.annotation.Mapping;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+/**
+ * 排序注解
+ *
+ * @author shawn
+ */
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Mapping
 @Documented
 public @interface OrderBy {
 
-    Direction direction() default Direction.ASC;
+    Direction value() default Direction.ASC;
 
-    int index() default 1;
+    int index() default 0;
 }

@@ -14,13 +14,13 @@ import java.util.Date;
  */
 public class DateTimeUtils {
 
-    public static final String DATE_YMD = "yyyy-MM-dd";
+    public static final String DATETIME_YMD = "yyyy-MM-dd";
 
-    public static final String DATE_YMDH = "yyyy-MM-dd HH";
+    public static final String DATETIME_YMDH = "yyyy-MM-dd HH";
 
-    public static final String DATE_YMDHM = "yyyy-MM-dd HH:mm";
+    public static final String DATETIME_YMDHM = "yyyy-MM-dd HH:mm";
 
-    public static final String DATE_MDHM = "MM-dd HH:mm";
+    public static final String DATETIME_MDHM = "MM-dd HH:mm";
 
     public static final String DATETIME_YMDHMS = "yyyy-MM-dd HH:mm:ss";
 
@@ -28,7 +28,7 @@ public class DateTimeUtils {
 
     public static final String DATETIME_YMDHMSS_T = "yyyy-MM-dd'T'HH:mm:ssZ";
 
-    public static final String TIME_HMS = "HH:mm:ss";
+    public static final String DATETIME_HMS = "HH:mm:ss";
 
     public static final String DIGIT_YMDHMS = "yyyyMMddHHmmss";
 

@@ -13,6 +13,8 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.RowBounds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.sql.Connection;
@@ -22,18 +24,14 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Copyright (C) aisainfo
- * <p/>
- * Title: PaginationPlugin
- * Description:  mybatis分页拦截器,查询分页使用
+ * Mybatis分页插件,方言：dialect：mysql/oracle
  *
- * @author hanbing
- * @version V1.0
- * @since 2015/5/27
+ * @author shawn
  */
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
 public class MybatisPaginationPlugin implements Interceptor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisPaginationPlugin.class);
 
     private Dialect dialect;
 

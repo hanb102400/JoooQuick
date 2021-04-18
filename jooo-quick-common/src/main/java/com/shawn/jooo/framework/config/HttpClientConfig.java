@@ -88,11 +88,6 @@ public class HttpClientConfig {
      */
     private int keepAliveTime = 60;
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
     /**
      * 创建HTTP客户端工厂
      */
@@ -120,7 +115,7 @@ public class HttpClientConfig {
     /**
      * 初始化RestTemplate,并加入spring的Bean工厂，由spring统一管理
      */
-    @Bean(name = "httpClientTemplate")
+    @Bean
     public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
         return createRestTemplate(factory);
     }
@@ -230,9 +225,6 @@ public class HttpClientConfig {
         //设置错误处理器
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
         return restTemplate;
-
-
-
     }
 
     /**

@@ -2,11 +2,9 @@ package com.shawn.jooo.framework.mybatis.mapper;
 
 import com.shawn.jooo.framework.mybatis.annotation.LogicDelete;
 import com.shawn.jooo.framework.mybatis.reflect.BeanReflections;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.ibatis.builder.annotation.ProviderContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

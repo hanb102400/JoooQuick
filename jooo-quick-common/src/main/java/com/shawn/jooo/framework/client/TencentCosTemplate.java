@@ -9,19 +9,23 @@ import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
-import com.shawn.jooo.framework.core.request.Requests;
-import com.shawn.jooo.framework.core.validate.Preconditions;
 import com.shawn.jooo.framework.core.validate.Validations;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 /**
  * 腾讯云cos工具类
@@ -29,26 +33,27 @@ import java.io.InputStream;
  * @author shawn
  */
 @Component
-@ConditionalOnProperty("app.oss.tencent")
+@ConditionalOnProperty(name = "app.tencentOss.secretId")
 public class TencentCosTemplate {
 
     private static final Logger logger = LoggerFactory.getLogger(TencentCosTemplate.class);
 
-    @Value("${app.oss.tencent.secretId}")
+    @Value("${app.tencentOss.secretId}")
     private String secretId;
 
-    @Value("${app.oss.tencent.secretKey}")
+    @Value("${app.tencentOss.secretKey}")
     private String secretKey;
 
-    @Value("${app.oss.tencent.region}")
+    @Value("${app.tencentOss.region}")
     private String region;
 
-    @Value("${app.oss.tencent.bucketName}")
+    @Value("${app.tencentOss.bucketName}")
     private String bucketName;
 
+    @Value("${app.tencentOss.url}")
+    private String ossUrl;
 
     private COSClient cosClient;
-
 
     @PostConstruct
     public void init() {
@@ -82,22 +87,31 @@ public class TencentCosTemplate {
             bucketResult = cosClient.createBucket(createBucketRequest);
         } catch (CosServiceException serverException) {
             serverException.printStackTrace();
-            logger.error("oss error",serverException);
         } catch (CosClientException clientException) {
             clientException.printStackTrace();
-            logger.error("oss error",clientException);
         }
         return bucketResult;
     }
 
-    public void uploadFile(String key, File uploadFile) {
+    public PutObjectResult uploadFile(String key, File uploadFile) {
         // 指定要上传到 COS 上对象键
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, uploadFile);
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
         putObjectResult.getMetadata().getServerSideEncryption();
+        return putObjectResult;
     }
 
-    public void uploadFile(String key, InputStream inputStream, String contentType, long size) {
+    public PutObjectResult uploadFile(String key, InputStream inputStream, String contentType) {
+        // 指定要上传到的存储桶
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(contentType);
+        // 指定要上传到 COS 上对象键
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, inputStream, objectMetadata);
+        PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+        return putObjectResult;
+    }
+
+    public PutObjectResult uploadFile(String key, InputStream inputStream, String contentType, long size) {
         // 指定要上传到的存储桶
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(contentType);
@@ -105,6 +119,7 @@ public class TencentCosTemplate {
         // 指定要上传到 COS 上对象键
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, inputStream, objectMetadata);
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+        return putObjectResult;
     }
 
     public ObjectMetadata downloadFile(String key, File downFile) {
@@ -123,5 +138,35 @@ public class TencentCosTemplate {
         getObjectRequest = new GetObjectRequest(bucketName, key);
         ObjectMetadata downObjectMeta = cosClient.getObject(getObjectRequest, downFile);
         return downObjectMeta;
+    }
+
+    public String getDownloadUrl(String key) {
+        String downloadUrl;
+        if (StringUtils.isNotEmpty(ossUrl)) {
+            downloadUrl = ossUrl + key;
+        } else {
+            downloadUrl = key;
+        }
+        return downloadUrl;
+    }
+
+    public String getRandomKey(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String key = getDayPath() + uuid + "." + FilenameUtils.getExtension(filename);
+        return key;
+    }
+
+    public String getRandomKey(String ext) {
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String key = getDayPath() + uuid + "." + ext;
+        return key;
+    }
+
+    public String getDayPath() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String day = formatter.format(now);
+        return "/res/" + day + "/";
     }
 }

@@ -1,8 +1,9 @@
 package com.shawn.jooo.generator.api;
 
 import com.shawn.jooo.generator.config.*;
-import com.shawn.jooo.generator.exception.XMLParserException;
 import com.shawn.jooo.generator.table.ColumnOverride;
+import com.shawn.jooo.generator.config.*;
+import com.shawn.jooo.generator.exception.XMLParserException;
 import com.shawn.jooo.generator.utils.ObjectFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.*;

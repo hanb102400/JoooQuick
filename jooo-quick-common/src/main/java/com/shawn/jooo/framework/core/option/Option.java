@@ -2,15 +2,24 @@ package com.shawn.jooo.framework.core.option;
 
 public class Option {
 
-    private String value;
+    private Object value;
 
     private String label;
 
-    public String getValue() {
+    private Option(Object value, String label) {
+        this.value = value;
+        this.label = label;
+    }
+
+    public static Option of(Object value, String label) {
+        return new Option(value, label);
+    }
+
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 

@@ -1,16 +1,14 @@
 package com.shawn.jooo.framework.client;
 
 import com.shawn.jooo.framework.utils.JSONUtils;
+import com.shawn.jooo.framework.utils.RedisKey;
+import com.shawn.jooo.framework.utils.RedisUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import javax.annotation.Resource;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.concurrent.Callable;
@@ -21,13 +19,12 @@ import java.util.concurrent.Callable;
  * @author shawn
  */
 @Component
-@ConditionalOnClass(StringRedisTemplate.class)
+
 public class CacheTemplate {
 
     private Logger logger = LoggerFactory.getLogger(CacheTemplate.class);
 
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
+
 
     private Type typeOfT;
 
@@ -37,8 +34,7 @@ public class CacheTemplate {
 
     private Callable callable;
 
-    @Value("${app.cacheExpireTime:600}")
-    private int expire;
+    private Long expire;
 
     public static CacheTemplate create() {
         return new CacheTemplate();
@@ -84,46 +80,50 @@ public class CacheTemplate {
         if (callable == null) {
             throw new RuntimeException("data call must be set!");
         }
-
+        if (expire == null) {
+            expire = RedisKey.getDefaultExpireTime();
+        }
+        String redisKey = RedisKey.getKey(key);
         if (StringUtils.isEmpty(field)) {
             try {
-                String result = stringRedisTemplate.opsForValue().get(key);
+                String result = RedisUtils.get(redisKey);
                 if (StringUtils.isNotEmpty(result)) {
-                    logger.debug("[cache] get client from redis : {} = {}", key, result);
+                    logger.debug("[cache] get cache from redis : {} = {}", redisKey, result);
                     return JSONUtils.parseObject(result, typeOfT);
                 } else {
                     Object callResult = callable.call();
                     if (!ObjectUtils.isEmpty(callResult)) {
                         result = JSONUtils.toJSONString(callResult);
-                        logger.debug("[client] get client from database : {} = {}, expire {}", key, result, expire);
-                        stringRedisTemplate.opsForValue().set(key, result);
+                        logger.debug("[cache] get cache from database : {} = {}, expire {}", redisKey, result, expire);
+                        RedisUtils.set(redisKey, result);
                         if (expire != -1) {
-                            stringRedisTemplate.expire(key, Duration.ofSeconds(expire));
+                            RedisUtils.expire(redisKey, Duration.ofSeconds(expire));
                         }
                         return ((T) callResult);
                     }
                 }
                 return null;
             } catch (Exception e) {
-                logger.error("[cache] CacheTemplate error key = {},  msg = {} \n", key, e.getMessage());
+                logger.warn("[cache] get cache error key = {},  msg = {} \n", redisKey, e.getMessage());
+                logger.error("[cache] error", e);
             }
         } else {
             try {
-                String result = (String) stringRedisTemplate.opsForHash().get(key, field);
+                String result = RedisUtils.hget(redisKey, field);
                 if (StringUtils.isNotEmpty(result)) {
-                    logger.debug("[cache] get client from redis : {}.{} = {}", key, field, result);
+                    logger.debug("[cache] get cache from redis : {}.{} = {}", redisKey, field, result);
                     return JSONUtils.parseObject(result, typeOfT);
                 } else {
                     Object callResult = callable.call();
                     if (!ObjectUtils.isEmpty(callResult)) {
                         result = JSONUtils.toJSONString(callResult);
-                        logger.debug("[cache] get client from database : {}.{} = {}, expire {}", key, field, result);
-                        if (stringRedisTemplate.persist(key)) {
-                            stringRedisTemplate.opsForHash().put(key, field, result);
+                        logger.debug("[cache] get cache from database : {}.{} = {}, expire {}", redisKey, field, result);
+                        if (RedisUtils.persist(redisKey)) {
+                            RedisUtils.hset(redisKey, field, result);
                         } else {
-                            stringRedisTemplate.opsForHash().put(key, field, result);
+                            RedisUtils.hset(redisKey, field, result);
                             if (expire != -1) {
-                                stringRedisTemplate.expire(key, Duration.ofSeconds(expire));
+                                RedisUtils.expire(redisKey, Duration.ofSeconds(expire));
                             }
                         }
                         return ((T) callResult);
@@ -131,11 +131,24 @@ public class CacheTemplate {
                 }
                 return null;
             } catch (Exception e) {
-                logger.error("[cache] CacheTemplate error key = {}, field = {}, msg = {} \n", key, field, e.getMessage());
+                logger.warn("[cache] get cache error key = {}, field = {}, msg = {} \n", redisKey, field, e.getMessage());
+                logger.error("[cache] error", e);
             }
             return null;
         }
 
         return null;
+    }
+
+    public void clear() {
+        if (StringUtils.isEmpty(key)) {
+            throw new RuntimeException("key must be set value!");
+        }
+        String redisKey = RedisKey.getKey(key);
+        if (StringUtils.isEmpty(field)) {
+            RedisUtils.del(redisKey);
+        } else {
+            RedisUtils.hdel(redisKey, field);
+        }
     }
 }

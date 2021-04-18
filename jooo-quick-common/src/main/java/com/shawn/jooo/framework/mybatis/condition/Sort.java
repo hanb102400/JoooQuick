@@ -75,8 +75,16 @@ public class Sort {
     }
 
 
+    public static Sort orderBy(Direction direct, String column) {
+        return new Sort(direct, column, 0);
+    }
+
     public static <U> Sort orderBy(Direction direct, Fn<U, Object> fn, int site) {
         return new Sort(direct, FnReflections.fnToColumnName(fn), site);
+    }
+
+    public static <U> Sort orderBy(Direction direct, Fn<U, Object> fn) {
+        return new Sort(direct, FnReflections.fnToColumnName(fn), 0);
     }
 
     public static String toOrderBySql(Sort... sorts) {

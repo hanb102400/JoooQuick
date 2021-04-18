@@ -117,7 +117,7 @@ public class QueryHelper {
         for (Field queryField : beanFiles) {
             if (queryField.isAnnotationPresent(OrderBy.class)) {
                 OrderBy orderBy = queryField.getAnnotation(OrderBy.class);
-                Direction direction = orderBy.direction();
+                Direction direction = orderBy.value();
                 int index = orderBy.index();
                 String columnName = BeanReflections.getColumnName(queryField);
                 Sort sort = Sort.orderBy(direction, columnName, index);

@@ -1,12 +1,11 @@
 package com.shawn.jooo.generator.api;
 
 import com.shawn.jooo.generator.config.Configuration;
-import com.shawn.jooo.generator.config.JdbcConnectionConfiguration;
 import com.shawn.jooo.generator.config.TableConfiguration;
-import com.shawn.jooo.generator.config.TemplateConfiguration;
 import com.shawn.jooo.generator.table.DatabaseIntrospector;
 import com.shawn.jooo.generator.table.IntrospectedTable;
 import com.shawn.jooo.generator.table.JdbcConnectionFactory;
+import com.shawn.jooo.generator.config.JdbcConnectionConfiguration;
 import com.shawn.jooo.generator.utils.MsgFmt;
 import com.shawn.jooo.generator.utils.PathUtils;
 import com.shawn.jooo.generator.utils.ZipUtils;

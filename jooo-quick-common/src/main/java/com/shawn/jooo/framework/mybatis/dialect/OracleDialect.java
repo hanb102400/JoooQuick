@@ -1,10 +1,9 @@
 package com.shawn.jooo.framework.mybatis.dialect;
 
 /**
- * @author hanbing
- * @ClassName: MysqlDialect
- * @Description: Dialect的Oracle实现
- * @Since 2018/07/12
+ *  OracleDialect
+ * 
+ *  @author shawn
  */
 public class OracleDialect implements Dialect {
 

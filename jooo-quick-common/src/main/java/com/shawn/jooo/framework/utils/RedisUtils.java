@@ -7,6 +7,7 @@ import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,10 +17,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisUtils {
 
-
-    public static StringRedisTemplate getStringRedisTemplate() {
+    public static StringRedisTemplate getTemplate() {
         StringRedisTemplate stringRedisTemplate = SpringContextHolder.getBean(StringRedisTemplate.class);
         return stringRedisTemplate;
+    }
+
+    public static Boolean persist(String key) {
+        return getTemplate().persist(key);
     }
 
     public static String getKey(String... keys) {
@@ -27,66 +31,77 @@ public class RedisUtils {
     }
 
     public static String get(String key) {
-        return getStringRedisTemplate().opsForValue().get(key);
+        return getTemplate().opsForValue().get(key);
     }
 
     public static void set(String key, String value) {
-        getStringRedisTemplate().opsForValue().set(key, value);
+        getTemplate().opsForValue().set(key, value);
     }
 
     public static Integer getInt(String key) {
-        String val = getStringRedisTemplate().opsForValue().get(key);
+        String val = getTemplate().opsForValue().get(key);
         return NumberUtils.toInt(val);
     }
 
+    public static Long getLong(String key) {
+        String val = getTemplate().opsForValue().get(key);
+        return NumberUtils.toLong(val);
+    }
+
     public static void setInt(String key, Integer value) {
-        getStringRedisTemplate().opsForValue().set(key, String.valueOf(value));
+        getTemplate().opsForValue().set(key, String.valueOf(value));
     }
 
     public static Long increment(String key) {
-        return getStringRedisTemplate().opsForValue().increment(key);
+        return getTemplate().opsForValue().increment(key);
     }
 
     public static Long increment(String key, Long num) {
-        return getStringRedisTemplate().opsForValue().increment(key, num);
+        return getTemplate().opsForValue().increment(key, num);
     }
 
-
-    public void set(String key, String value, long expireSec) {
-        getStringRedisTemplate().opsForValue().set(key, value, expireSec, TimeUnit.SECONDS);
+    public static void set(String key, String value, long expireSec) {
+        getTemplate().opsForValue().set(key, value, expireSec, TimeUnit.SECONDS);
     }
 
-    public void setExpire(String key, long expireSec) {
-        getStringRedisTemplate().expire(key, expireSec, TimeUnit.SECONDS);
+    public static void expire(String key, long expireSec) {
+        getTemplate().expire(key, expireSec, TimeUnit.SECONDS);
     }
 
-    public void delete(String key) {
-        getStringRedisTemplate().delete(key);
+    public static void expire(String key, Duration duration) {
+        getTemplate().expire(key, duration);
     }
 
-    public Long incr(String key, long delta) {
-        return getStringRedisTemplate().opsForValue().increment(key, delta);
+    public static void del(String key) {
+        getTemplate().delete(key);
     }
 
-    public void lpush(String key, String value) {
-        getStringRedisTemplate().opsForList().leftPush(key, value);
+    public static Long incr(String key, long delta) {
+        return getTemplate().opsForValue().increment(key, delta);
     }
 
-    public String rpop(String key) {
-        return getStringRedisTemplate().opsForList().rightPop(key);
+    public static void lpush(String key, String value) {
+        getTemplate().opsForList().leftPush(key, value);
     }
 
-    public void hset(String h, String hk, Object hv) {
-        getStringRedisTemplate().opsForHash().put(h, hk, hv);
+    public static String rpop(String key) {
+        return getTemplate().opsForList().rightPop(key);
     }
 
-    public Object hget(String h, String hk) {
-        return getStringRedisTemplate().opsForHash().get(h, hk);
+    public static void hset(String h, String hk, Object hv) {
+        getTemplate().opsForHash().put(h, hk, hv);
     }
 
+    public static String hget(String h, String hk) {
+        return getTemplate().opsForHash().get(h, hk).toString();
+    }
+
+    public static String hdel(String h, String hk) {
+        return getTemplate().opsForHash().delete(h, hk).toString();
+    }
 
     public String scriptLoad(String script) {
-        return getStringRedisTemplate().execute(new RedisCallback<String>() {
+        return getTemplate().execute(new RedisCallback<String>() {
             @Override
             public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
                 return redisConnection.scriptLoad(script.getBytes());
@@ -95,7 +110,7 @@ public class RedisUtils {
     }
 
     public String evalSha(String sha, int numKeys, byte[]... args) {
-        return getStringRedisTemplate().execute(new RedisCallback<String>() {
+        return getTemplate().execute(new RedisCallback<String>() {
             @Override
             public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
                 return redisConnection.evalSha(sha, ReturnType.VALUE, numKeys, args);
@@ -104,7 +119,7 @@ public class RedisUtils {
     }
 
     public void scriptFlush() {
-        getStringRedisTemplate().execute(new RedisCallback<Object>() {
+        getTemplate().execute(new RedisCallback<Object>() {
             @Override
             public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
                 redisConnection.scriptFlush();

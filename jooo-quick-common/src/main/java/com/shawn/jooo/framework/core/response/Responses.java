@@ -53,14 +53,14 @@ public class Responses {
         return response;
     }
 
-    public static <T> Response<T> success(String msg,T data) {
+    public static <T> Response<T> success(String msg, T data) {
         Response<T> response = success();
         response.setMessage(msg);
         response.setData(data);
         return response;
     }
 
-    public static <T> Response<T> success(int code,String msg,T data) {
+    public static <T> Response<T> success(int code, String msg, T data) {
         Response<T> response = success();
         response.setCode(code);
         response.setMessage(msg);
@@ -105,7 +105,7 @@ public class Responses {
         return null;
     }
 
-    public static String writeJson(HttpServletResponse response, String json,int status) throws IOException {
+    public static String writeJson(HttpServletResponse response, String json, int status) throws IOException {
         response.setStatus(status);
         response.setContentType(MediaType.APPLICATION_JSON.getType());
         response.setCharacterEncoding("utf-8");

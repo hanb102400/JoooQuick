@@ -4,7 +4,6 @@ import com.shawn.jooo.generator.api.ConfigurationParser;
 import com.shawn.jooo.generator.api.CodeGenarator;
 import com.shawn.jooo.generator.config.Configuration;
 import com.shawn.jooo.generator.exception.XMLParserException;
-import com.shawn.jooo.generator.utils.ZipUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

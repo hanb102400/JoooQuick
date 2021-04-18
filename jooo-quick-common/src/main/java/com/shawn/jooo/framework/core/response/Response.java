@@ -16,7 +16,7 @@ public class Response<T> implements Serializable {
 
     public static final int FAILURE_CODE = 1000;
 
-    public static final int ERROR_CODE = 999;
+    public static final int ERROR_CODE = 9999;
 
     public static final String SUCCESS_MSG = "success";
 
@@ -25,13 +25,19 @@ public class Response<T> implements Serializable {
     public static final String ERROR_MSG = "error";
 
 
-    // 响应代码，成功：0
+    /**
+     * 返回码：0代表成功
+     */
     private int code;
 
-    // 业务失败提示
+    /**
+     * 返回提示
+     */
     private String message;
 
-    // 返回对象
+    /**
+     * 消息体
+     */
     private T data;
 
     public Response() {

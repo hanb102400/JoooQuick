@@ -25,9 +25,9 @@
                                 系统配置
                             </router-link>
                         </li>
-                        <li class="nav-item active">
+                        <li class="nav-item ">
                             <router-link to="/component">
-                                常用组件
+                                组件示例
                             </router-link>
                         </li>
                         <li class="nav-item">
@@ -61,6 +61,7 @@ module.exports = {
             sessionStorage.setItem("admin-menu-active", this.active);
         },
         async logout() {
+	    //const resp = await Net.post('/logout/cas');
             const resp = await Net.post('/logout');
             if (resp.code == 0) {
                 if (resp.logoutUrl) {
@@ -76,7 +77,7 @@ module.exports = {
         }
     },
     mounted() {
-console.log("wwwww")
+
     }
 
 }

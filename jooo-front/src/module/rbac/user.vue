@@ -47,6 +47,7 @@
             <template slot-scope="scope">
                 <el-button type="text" icon="el-icon-edit" size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                 <el-button type="text" icon="el-icon-delete" size="mini" @click="handleRemove(scope.$index, scope.row)">删除</el-button>
+                 <el-button type="text" icon="el-icon-edit" size="mini" @click="handlePass(scope.$index, scope.row)">重置密码</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -96,14 +97,14 @@
                 <el-col :span="12">
                     <el-form-item label="用户性别">
                         <el-select v-model="form.sex" placeholder="请选择">
-                            <el-option v-for="item  in sexOptions" :key="item .value" :value="item .value" :label="item.label"></el-option>
+                            <el-option v-for="item  in sexOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="角色">
                         <el-select v-model="form.roleIds" multiple placeholder="请选择">
-                            <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.status == 1"></el-option>
+                            <el-option v-for="item in roleOptions" :key="item.value" :value="item.value" :label="item.label" ></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
@@ -191,6 +192,7 @@ module.exports = {
             pageSize: 15,
             tableData: [],
             departOptions:[],
+            roleOptions:[],
             statusOptions: [{
                     label: '正常',
                     value: 0
@@ -237,6 +239,17 @@ module.exports = {
         handleReset: function () {
             this.query = {};
         },
+        handlePass: function (index, row){
+            this.$prompt('请输入"' + row.nickname + '"的新密码', "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消"
+            }).then(async ({ value }) => {
+                 const resp = await Net.post('/sysUser/resetPass', {
+                    userId: row.userId,
+                    password: value
+                });
+           }).catch(() => {});
+        },
         handleAdd: function () {
             if (this.$refs['form']) {
                 this.$refs['form'].resetFields();
@@ -256,9 +269,12 @@ module.exports = {
             this.title = '修改用户';
             this.showDialog = true;
             const resp = await Net.get('/sysUser/detail', {
-                userId: this.getSelectId(row)
+               userId: row.userId
             });
-            this.form = resp.data;
+            if (resp.code == 0) {
+                this.form = resp.data;
+                  console.log("xxxx",this.form)
+            }
         },
         handleRemove: function (index, row) {
             if (!row && !this.singleSelected && !this.multipleSelected) {
@@ -348,6 +364,13 @@ module.exports = {
             this.pageSize = resp.data.pageSize
             this.totalCount = resp.data.totalCount
         },
+        loadingRoleOptions:async function () {
+            const resp = await Net.post('/sysRole/options')
+            if (resp.code == 0) {
+                 this.roleOptions = resp.data;
+            }
+           
+        },
         async refreshTreeSelect() {
             const resp = await Net.post('/sysDepart/treeSelect', this.query)
             if (resp.code == 0) {
@@ -358,8 +381,9 @@ module.exports = {
     },
     mounted() {
         this.pageNo = 1;
+        this.loadingRoleOptions();
         this.refreshTreeSelect();
-        this.loadingData()
+        this.loadingData();
         this.loading = false;
     }
 }
